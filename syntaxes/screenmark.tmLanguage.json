@@ -1,0 +1,193 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "ScreenMark",
+  "scopeName": "text.screenmark",
+  "patterns": [
+    {
+      "include": "#frontmatter"
+    },
+    {
+      "include": "#comment"
+    },
+    {
+      "include": "#scene"
+    },
+    {
+      "include": "#section"
+    },
+    {
+      "include": "#character"
+    },
+    {
+      "include": "#parenthetical"
+    },
+    {
+      "include": "#centered"
+    },
+    {
+      "include": "#dialog"
+    },
+    {
+      "include": "#lyric"
+    },
+    {
+      "include": "#transition"
+    },
+    {
+      "include": "#pagebreak"
+    }
+  ],
+  "repository": {
+    "frontmatter": {
+      "begin": "\\A[ \\t]*---\\s*$",
+      "end": "^[ \\t]*---\\s*$",
+      "name": "meta.embedded.block.frontmatter.screenmark",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.tag.screenmark"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.tag.screenmark"
+        }
+      },
+      "patterns": [
+        {
+          "match": "^\\s*([A-Za-z][\\w ]*?)\\s*(:)\\s*(.*)$",
+          "captures": {
+            "1": {
+              "name": "entity.name.tag.screenmark"
+            },
+            "2": {
+              "name": "punctuation.separator.key-value.screenmark"
+            },
+            "3": {
+              "name": "string.unquoted.screenmark"
+            }
+          }
+        }
+      ]
+    },
+    "comment": {
+      "begin": "<!--",
+      "end": "-->",
+      "name": "comment.block.html.screenmark"
+    },
+    "scene": {
+      "match": "^[ \\t]*(##)\\s+(.*?)(?:\\s+(#[^#\\s][^#]*?#))?\\s*$",
+      "name": "markup.heading.scene.screenmark",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.heading.screenmark"
+        },
+        "2": {
+          "name": "entity.name.function.scene-heading.screenmark"
+        },
+        "3": {
+          "name": "constant.numeric.scene-number.screenmark"
+        }
+      }
+    },
+    "section": {
+      "match": "^[ \\t]*(#{1,6})\\s+(.*)$",
+      "name": "markup.heading.section.screenmark",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.heading.screenmark"
+        },
+        "2": {
+          "name": "keyword.control.section.screenmark"
+        }
+      }
+    },
+    "character": {
+      "match": "^[ \\t]*(\\*\\*)([^*]+)(\\*\\*)\\s*(\\^)?$",
+      "name": "markup.bold.character.screenmark",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.bold.screenmark"
+        },
+        "2": {
+          "name": "entity.name.class.character.screenmark"
+        },
+        "3": {
+          "name": "punctuation.definition.bold.screenmark"
+        },
+        "4": {
+          "name": "keyword.operator.dual-dialog.screenmark"
+        }
+      }
+    },
+    "parenthetical": {
+      "match": "^[ \\t]*(_\\()(.*)(\\)_)\\s*$",
+      "name": "markup.italic.parenthetical.screenmark",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.italic.screenmark"
+        },
+        "2": {
+          "name": "support.constant.parenthetical.screenmark"
+        },
+        "3": {
+          "name": "punctuation.definition.italic.screenmark"
+        }
+      }
+    },
+    "centered": {
+      "match": "^[ \\t]*(>)\\s?(.*?)\\s?(<)\\s*$",
+      "name": "markup.quote.centered.screenmark",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.quote.screenmark"
+        },
+        "2": {
+          "name": "string.other.centered.screenmark"
+        },
+        "3": {
+          "name": "punctuation.definition.quote.screenmark"
+        }
+      }
+    },
+    "dialog": {
+      "match": "^[ \\t]*(>)\\s?(.*)$",
+      "name": "markup.quote.dialog.screenmark",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.quote.screenmark"
+        },
+        "2": {
+          "name": "string.quoted.dialog.screenmark"
+        }
+      }
+    },
+    "lyric": {
+      "match": "^[ \\t]*(~)\\s?(.*)$",
+      "name": "markup.italic.lyric.screenmark",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.italic.screenmark"
+        },
+        "2": {
+          "name": "string.quoted.lyric.screenmark"
+        }
+      }
+    },
+    "transition": {
+      "match": "^[ \\t]*(@)\\s?(.*)$",
+      "name": "keyword.control.transition.screenmark",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.keyword.screenmark"
+        },
+        "2": {
+          "name": "keyword.control.transition.text.screenmark"
+        }
+      }
+    },
+    "pagebreak": {
+      "match": "^[ \\t]*-{3,}\\s*$",
+      "name": "meta.separator.pagebreak.screenmark"
+    }
+  }
+}

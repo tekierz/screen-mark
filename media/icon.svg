@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <rect width="128" height="128" rx="26" fill="#222630"/>
+
+  <!-- screenplay page -->
+  <rect x="30" y="26" width="68" height="80" rx="5" fill="#f5f2ea"/>
+
+  <!-- clapper bar -->
+  <rect x="30" y="26" width="68" height="15" rx="5" fill="#e8b23a"/>
+  <rect x="30" y="36" width="68" height="5" fill="#e8b23a"/>
+  <g fill="#171a21">
+    <polygon points="36,26 44,26 38,41 30,41 30,38"/>
+    <polygon points="54,26 62,26 56,41 48,41"/>
+    <polygon points="72,26 80,26 74,41 66,41"/>
+    <polygon points="90,26 98,26 98,32 92,41 84,41"/>
+  </g>
+
+  <!-- scene heading -->
+  <rect x="38" y="50" width="42" height="4" rx="2" fill="#2b2f3a"/>
+  <!-- action -->
+  <rect x="38" y="60" width="52" height="3" rx="1.5" fill="#b9b3a5"/>
+  <rect x="38" y="67" width="36" height="3" rx="1.5" fill="#b9b3a5"/>
+  <!-- character cue (centered) -->
+  <rect x="56" y="78" width="20" height="4" rx="2" fill="#c8792b"/>
+  <!-- dialog block (indented) -->
+  <rect x="48" y="88" width="36" height="3" rx="1.5" fill="#8a8578"/>
+  <rect x="48" y="95" width="28" height="3" rx="1.5" fill="#8a8578"/>
+</svg>

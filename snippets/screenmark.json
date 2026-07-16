@@ -1,0 +1,55 @@
+{
+  "Title page": {
+    "prefix": "title",
+    "body": [
+      "---",
+      "title: ${1:Untitled}",
+      "credit: written by",
+      "author: ${2:Your Name}",
+      "draft: ${3:First Draft}",
+      "contact: ${4:you@example.com}",
+      "---",
+      "",
+      "$0"
+    ],
+    "description": "YAML frontmatter title page"
+  },
+  "Scene heading": {
+    "prefix": "scene",
+    "body": ["## ${1|INT.,EXT.,INT./EXT.|} ${2:LOCATION} - ${3|DAY,NIGHT,MORNING,EVENING,CONTINUOUS,LATER|}", "", "$0"],
+    "description": "Scene heading (slugline)"
+  },
+  "Dialog block": {
+    "prefix": "dialog",
+    "body": ["**${1:CHARACTER}**", "> ${2:What they say.}", "", "$0"],
+    "description": "Character cue + dialog"
+  },
+  "Dialog with parenthetical": {
+    "prefix": "dialogp",
+    "body": ["**${1:CHARACTER}**", "_(${2:beat})_", "> ${3:What they say.}", "", "$0"],
+    "description": "Character cue + parenthetical + dialog"
+  },
+  "Dual dialog": {
+    "prefix": "dual",
+    "body": [
+      "**${1:CHARACTER A}**",
+      "> ${2:First speech.}",
+      "",
+      "**${3:CHARACTER B}** ^",
+      "> ${4:Simultaneous speech.}",
+      "",
+      "$0"
+    ],
+    "description": "Two characters speaking simultaneously"
+  },
+  "Transition": {
+    "prefix": "trans",
+    "body": ["@${1|CUT TO:,FADE IN:,FADE OUT.,DISSOLVE TO:,SMASH CUT TO:,MATCH CUT TO:|}", "", "$0"],
+    "description": "Transition"
+  },
+  "Centered text": {
+    "prefix": "center",
+    "body": ["> ${1:THE END} <"],
+    "description": "Centered text"
+  }
+}

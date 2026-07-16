@@ -1,0 +1,190 @@
+{
+  "name": "screen-mark",
+  "displayName": "ScreenMark",
+  "description": "Write screenplays in markdown. Export real screenplay PDFs — then plan the shoot with breakdowns, schedules, and budgets.",
+  "version": "0.2.1",
+  "publisher": "tikilabs",
+  "license": "MIT",
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#222630",
+    "theme": "dark"
+  },
+  "keywords": [
+    "screenplay",
+    "screenwriting",
+    "fountain",
+    "film",
+    "markdown"
+  ],
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Formatters",
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:screenmark"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "screenmark",
+        "aliases": [
+          "ScreenMark",
+          "screenmark"
+        ],
+        "extensions": [
+          ".smark"
+        ],
+        "filenamePatterns": [
+          "*.screen.md"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "screenmark",
+        "scopeName": "text.screenmark",
+        "path": "./syntaxes/screenmark.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "screenmark",
+        "path": "./snippets/screenmark.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "screenmark.exportPdf",
+        "title": "ScreenMark: Export PDF"
+      },
+      {
+        "command": "screenmark.exportFountain",
+        "title": "ScreenMark: Export Fountain"
+      },
+      {
+        "command": "screenmark.openPreview",
+        "title": "ScreenMark: Open Preview",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "screenmark.numberScenes",
+        "title": "ScreenMark: Number Scenes"
+      },
+      {
+        "command": "screenmark.generateBreakdown",
+        "title": "ScreenMark: Scene Breakdown"
+      },
+      {
+        "command": "screenmark.generateSchedule",
+        "title": "ScreenMark: Shooting Schedule"
+      },
+      {
+        "command": "screenmark.initBudget",
+        "title": "ScreenMark: Init Budget"
+      },
+      {
+        "command": "screenmark.budgetSummary",
+        "title": "ScreenMark: Budget Summary"
+      },
+      {
+        "command": "screenmark.refreshProject",
+        "title": "ScreenMark: Refresh Project View",
+        "icon": "$(refresh)"
+      }
+    ],
+    "configuration": {
+      "title": "ScreenMark",
+      "properties": {
+        "screenmark.pagesPerDay": {
+          "type": "number",
+          "default": 5,
+          "minimum": 0.5,
+          "description": "Target script pages per shooting day used by ScreenMark: Shooting Schedule."
+        }
+      }
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "screenmarkProject",
+          "name": "Film Project",
+          "icon": "$(device-camera-video)"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "screenmarkProject",
+        "contents": "No screenplay files found.\nCreate a file ending in .screen.md or .smark to start a script, then generate breakdowns, schedules, and budgets from it."
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "screenmark.openPreview",
+          "when": "editorLangId == screenmark",
+          "group": "navigation"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "screenmark.refreshProject",
+          "when": "view == screenmarkProject",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "screenmark.generateBreakdown",
+          "when": "editorLangId == screenmark"
+        },
+        {
+          "command": "screenmark.generateSchedule",
+          "when": "editorLangId == screenmark"
+        },
+        {
+          "command": "screenmark.exportPdf",
+          "when": "editorLangId == screenmark"
+        },
+        {
+          "command": "screenmark.exportFountain",
+          "when": "editorLangId == screenmark"
+        },
+        {
+          "command": "screenmark.openPreview",
+          "when": "editorLangId == screenmark"
+        },
+        {
+          "command": "screenmark.numberScenes",
+          "when": "editorLangId == screenmark"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts",
+    "vscode:prepublish": "npm run build",
+    "package": "npx @vscode/vsce package"
+  },
+  "dependencies": {
+    "pdfkit": "^0.15.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/pdfkit": "^0.13.4",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.21.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0"
+  }
+}
