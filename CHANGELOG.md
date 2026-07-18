@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0
+
+**Added**
+- **ScreenMark sidebar** — a dedicated Activity Bar icon opening an **Actions** panel (every command as a clickable button, grouped by task) and the **Film Project** tree, which moved here from the Explorer.
+- Editor title-bar buttons for Open Preview and Export PDF.
+
 ## 0.2.1
 
 **Fixed**

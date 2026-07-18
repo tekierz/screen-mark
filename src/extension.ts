@@ -9,6 +9,7 @@ import { PreviewPanel } from './features/preview';
 import { ScreenmarkCompletionProvider } from './features/completions';
 import { ScreenmarkSymbolProvider, ScreenmarkFoldingProvider } from './features/symbols';
 import { registerProjectTree } from './features/projectTree';
+import { registerActionsTree } from './features/actionsTree';
 
 const LANG = 'screenmark';
 
@@ -185,6 +186,7 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.languages.registerFoldingRangeProvider(selector, new ScreenmarkFoldingProvider())
   );
   registerProjectTree(context);
+  registerActionsTree(context);
 }
 
 export function deactivate(): void {}

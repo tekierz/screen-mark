@@ -2,7 +2,7 @@
   "name": "screen-mark",
   "displayName": "ScreenMark",
   "description": "Write screenplays in markdown. Export real screenplay PDFs — then plan the shoot with breakdowns, schedules, and budgets.",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "publisher": "tikilabs",
   "license": "MIT",
   "repository": {
@@ -66,11 +66,13 @@
     "commands": [
       {
         "command": "screenmark.exportPdf",
-        "title": "ScreenMark: Export PDF"
+        "title": "ScreenMark: Export PDF",
+        "icon": "$(file-pdf)"
       },
       {
         "command": "screenmark.exportFountain",
-        "title": "ScreenMark: Export Fountain"
+        "title": "ScreenMark: Export Fountain",
+        "icon": "$(export)"
       },
       {
         "command": "screenmark.openPreview",
@@ -79,23 +81,28 @@
       },
       {
         "command": "screenmark.numberScenes",
-        "title": "ScreenMark: Number Scenes"
+        "title": "ScreenMark: Number Scenes",
+        "icon": "$(list-ordered)"
       },
       {
         "command": "screenmark.generateBreakdown",
-        "title": "ScreenMark: Scene Breakdown"
+        "title": "ScreenMark: Scene Breakdown",
+        "icon": "$(checklist)"
       },
       {
         "command": "screenmark.generateSchedule",
-        "title": "ScreenMark: Shooting Schedule"
+        "title": "ScreenMark: Shooting Schedule",
+        "icon": "$(calendar)"
       },
       {
         "command": "screenmark.initBudget",
-        "title": "ScreenMark: Init Budget"
+        "title": "ScreenMark: Init Budget",
+        "icon": "$(credit-card)"
       },
       {
         "command": "screenmark.budgetSummary",
-        "title": "ScreenMark: Budget Summary"
+        "title": "ScreenMark: Budget Summary",
+        "icon": "$(symbol-number)"
       },
       {
         "command": "screenmark.refreshProject",
@@ -114,12 +121,24 @@
         }
       }
     },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "screenmark",
+          "title": "ScreenMark",
+          "icon": "media/activity-icon.svg"
+        }
+      ]
+    },
     "views": {
-      "explorer": [
+      "screenmark": [
+        {
+          "id": "screenmarkActions",
+          "name": "Actions"
+        },
         {
           "id": "screenmarkProject",
-          "name": "Film Project",
-          "icon": "$(device-camera-video)"
+          "name": "Film Project"
         }
       ]
     },
@@ -134,7 +153,12 @@
         {
           "command": "screenmark.openPreview",
           "when": "editorLangId == screenmark",
-          "group": "navigation"
+          "group": "navigation@1"
+        },
+        {
+          "command": "screenmark.exportPdf",
+          "when": "editorLangId == screenmark",
+          "group": "navigation@2"
         }
       ],
       "view/title": [

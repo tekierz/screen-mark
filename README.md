@@ -61,6 +61,14 @@ A blank line ends a dialog block.
 
 **Editor help:** syntax highlighting, character/scene/transition autocomplete, scene outline, folding, and snippets (`title`, `scene`, `dialog`, `dual`, `trans`).
 
+## The ScreenMark sidebar
+
+Click the clapperboard in the Activity Bar for one-click access to everything — no command palette needed.
+
+<img src="media/screenshots/sidebar.png" width="300" alt="ScreenMark sidebar">
+
+**Actions** groups every command by task; **Film Project** lists your scripts with their generated docs. The two most-used actions — Open Preview and Export PDF — also sit in the editor's title bar toolbar.
+
 ## Export
 
 | Command | Result |
