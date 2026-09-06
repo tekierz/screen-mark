@@ -11,6 +11,7 @@ export class PreviewPanel {
   private readonly panel: vscode.WebviewPanel;
   private readonly disposables: vscode.Disposable[] = [];
   private timer: ReturnType<typeof setTimeout> | undefined;
+  private disposed = false;
   private trackedDoc: vscode.TextDocument | undefined;
   private lastRender: { body: string; line: number } | undefined;
 
@@ -77,7 +78,9 @@ export class PreviewPanel {
 
   private scheduleUpdate(doc: vscode.TextDocument): void {
     if (this.timer) clearTimeout(this.timer);
-    this.timer = setTimeout(() => this.update(doc), 300);
+    this.timer = setTimeout(() => {
+      if (!this.disposed && doc === this.trackedDoc) this.update(doc);
+    }, 300);
   }
 
   private topVisibleLine(doc: vscode.TextDocument): number {
@@ -86,7 +89,9 @@ export class PreviewPanel {
   }
 
   private update(doc: vscode.TextDocument | undefined): void {
-    if (!doc || doc.languageId !== LANG) return;
+    if (this.timer) clearTimeout(this.timer);
+    this.timer = undefined;
+    if (this.disposed || !doc || doc.languageId !== LANG) return;
     this.trackedDoc = doc;
     this.panel.title = `Preview: ${doc.uri.path.split('/').pop()}`;
     this.lastRender = {
@@ -147,6 +152,7 @@ export class PreviewPanel {
   }
 
   private dispose(): void {
+    this.disposed = true;
     PreviewPanel.current = undefined;
     if (this.timer) clearTimeout(this.timer);
     for (const d of this.disposables) d.dispose();

@@ -23,7 +23,9 @@ export class ScreenmarkCompletionProvider implements vscode.CompletionItemProvid
       return names.reverse().map((name, idx) => {
         const item = new vscode.CompletionItem(name, vscode.CompletionItemKind.User);
         item.insertText = `**${name}**\n> `;
-        item.range = lineRange;
+        item.filterText = `${prefix.startsWith('**') ? '**' : '*'}${name}`;
+        const suffix = document.lineAt(position.line).text.slice(position.character).match(/^\*{1,2}/)?.[0] ?? '';
+        item.range = new vscode.Range(position.line, 0, position.line, position.character + suffix.length);
         item.sortText = String(idx).padStart(3, '0'); // most recently used first
         return item;
       });
@@ -39,6 +41,7 @@ export class ScreenmarkCompletionProvider implements vscode.CompletionItemProvid
       return [...slugs].map((slug) => {
         const item = new vscode.CompletionItem(slug, vscode.CompletionItemKind.Module);
         item.insertText = `## ${slug}`;
+        item.filterText = `## ${slug}`;
         item.range = lineRange;
         return item;
       });
@@ -49,6 +52,7 @@ export class ScreenmarkCompletionProvider implements vscode.CompletionItemProvid
       return TRANSITIONS.map((t) => {
         const item = new vscode.CompletionItem(t, vscode.CompletionItemKind.Keyword);
         item.insertText = `@${t}`;
+        item.filterText = `@${t}`;
         item.range = lineRange;
         return item;
       });
