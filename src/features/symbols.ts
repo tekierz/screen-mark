@@ -21,21 +21,23 @@ export class ScreenmarkSymbolProvider implements vscode.DocumentSymbolProvider {
     const { elements } = parse(document.getText());
     const last = document.lineCount - 1;
     const root: vscode.DocumentSymbol[] = [];
-    let currentSection: vscode.DocumentSymbol | undefined;
+    const sections: { depth: number; symbol: vscode.DocumentSymbol }[] = [];
 
     for (let i = 0; i < elements.length; i++) {
       const el = elements[i];
       if (el.kind === 'section') {
         const range = lineRange(document, el.line, blockEnd(elements, i, last, el.depth));
         const sym = new vscode.DocumentSymbol(el.text, '', vscode.SymbolKind.Namespace, range, lineRange(document, el.line, el.line));
-        root.push(sym);
-        currentSection = sym;
+        while (sections.length && sections[sections.length - 1].depth >= el.depth) sections.pop();
+        const parent = sections[sections.length - 1]?.symbol;
+        (parent ? parent.children : root).push(sym);
+        sections.push({ depth: el.depth, symbol: sym });
       } else if (el.kind === 'scene') {
         const name = el.number ? `${el.number}. ${el.text}` : el.text;
         const range = lineRange(document, el.line, blockEnd(elements, i, last));
         const sym = new vscode.DocumentSymbol(name, '', vscode.SymbolKind.Event, range, lineRange(document, el.line, el.line));
-        if (currentSection && currentSection.range.contains(range.start)) currentSection.children.push(sym);
-        else root.push(sym);
+        const parent = sections[sections.length - 1]?.symbol;
+        (parent ? parent.children : root).push(sym);
       }
     }
     return root;
