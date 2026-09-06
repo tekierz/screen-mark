@@ -1,8 +1,8 @@
 {
   "name": "screen-mark",
   "displayName": "ScreenMark",
-  "description": "Write screenplays in markdown. Export real screenplay PDFs — then plan the shoot with breakdowns, schedules, and budgets.",
-  "version": "0.3.0",
+  "description": "Write screenplays in markdown. Export real screenplay PDFs \u2014 then plan the shoot with breakdowns, schedules, and budgets.",
+  "version": "0.3.1",
   "publisher": "tikilabs",
   "license": "MIT",
   "repository": {
@@ -201,9 +201,10 @@
     "watch": "bun esbuild.js --watch",
     "typecheck": "tsc --noEmit",
     "test": "bun test ./test/*.test.ts",
-    "vscode:prepublish": "npm run build",
-    "package": "npx @vscode/vsce package",
-    "verify": "bun run typecheck && bun run test && bun run build"
+    "verify": "bun run typecheck && bun run test && bun run build",
+    "smoke": "bun scripts/editor-smoke.ts",
+    "samples": "bun scripts/generate-samples.ts",
+    "package": "bun scripts/release.ts"
   },
   "dependencies": {
     "pdfkit": "^0.15.0"

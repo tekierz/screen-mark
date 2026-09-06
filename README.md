@@ -59,6 +59,8 @@ Files are `.smark` or `*.screen.md` — the `.md` flavor still renders fine on G
 
 A blank line ends a dialog block.
 
+PDF export uses Courier’s Western European glyph coverage. Unsupported rendered characters, oversized title fields and documents without printable content produce errors before writing a file; title-only documents are valid. Fountain export forces parsed action and character types, and rejects text it cannot represent faithfully.
+
 **Editor help:** syntax highlighting, character/scene/transition autocomplete, scene outline, folding, and snippets (`title`, `scene`, `dialog`, `dual`, `trans`).
 
 ## The ScreenMark sidebar
@@ -88,34 +90,36 @@ Tag production elements inside any note:
 <!-- @prop: revolver, whiskey glass @wardrobe: red coat @vfx: muzzle flash -->
 ```
 
-**Scene Breakdown** turns the script into a report (`.md` + `.csv`) — location, time, cast, tagged elements, and page length in eighths measured off the real PDF layout.
+**Scene Breakdown** turns the script into a report (`.md` + `.csv`) — location, time, speaking cast, tagged elements, and conservative scene estimates in eighths. Speaking cast comes only from dialogue cues; silent performers are not inferred. The complete screenplay is paginated once, retained body rows are assigned to scenes, and each estimate is rounded up as `max(1, ceil(rows × 8 / 54))`. Title pages, pre-scene material and unused page tails do not count. The sum can exceed the physical PDF page count, especially with many short scenes.
 
 ![Scene breakdown report](media/screenshots/breakdown.png)
 
-**Shooting Schedule** packs scenes into days: grouped by location to cut company moves, day work before night, sized by `screenmark.pagesPerDay` (default 5).
+**Shooting Schedule** packs those scene estimates into days, grouped by location and then exact day/night labels, sized by `screenmark.pagesPerDay` (default 5). This is a draft scheduling heuristic; review the practical shooting order.
 
 ![Shooting schedule](media/screenshots/schedule.png)
 
-**Init Budget** scaffolds `budget.md`; **Budget Summary** recomputes totals and over/under variance in place. The **Film Project** panel in the Explorer keeps every script, report, and budget one click away.
+**Init Budget** scaffolds `budget.md` in the active document’s workspace root; **Budget Summary** recomputes owned generated tables and over/under variance in place. User notes and unowned Totals sections are preserved. Amounts use exact cents: blank cells are allowed, while invalid nonempty amounts, sub-cent values and unsafe totals stop the refresh without editing. The **Film Project** panel in the ScreenMark sidebar keeps every script, report, and budget one click away.
 
 Scene numbers are the glue — number once, and every report keeps pointing at the same scene as the script moves around.
 
 ## Install
 
-Grab the `.vsix` from [Releases](../../releases) and:
+Grab the `.vsix` from [Releases](https://github.com/tekierz/screen-mark/releases) and:
 
 ```bash
-cursor --install-extension screen-mark-0.2.1.vsix   # or: code --install-extension ...
+cursor --install-extension screen-mark-0.3.1.vsix   # or: code --install-extension ...
 ```
 
 ## Develop
 
 ```bash
-npm install
-npm test          # 46 tests: parser, fountain, pdf, breakdown, budget
-npm run build
-npm run package   # → .vsix
+bun install --frozen-lockfile
+bun run verify    # typecheck, regression tests, bundled build
+bun run smoke     # real isolated VS Code host
+bun run package   # verify, regenerate samples, package, installed-artifact smoke
 ```
+
+Use Bun 1.3.11 (pinned in package metadata). The local release command produces `screen-mark-0.3.1.vsix` and fails if a check fails. It uses the exact-pinned packager with dependency discovery disabled; PDFKit, font metrics and third-party notices are bundled. Set `SCREENMARK_CODE` to your VS Code CLI path and `SCREENMARK_EDITOR` to the editor executable if they are not installed at the default macOS locations. The release PDF check requires Poppler (`pdftotext` and `pdftoppm`). Smoke tests use temporary profiles and a two-root workspace.
 
 Press <kbd>F5</kbd> to launch a dev host with the sample script open.
 

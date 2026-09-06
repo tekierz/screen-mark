@@ -1,0 +1,15 @@
+Source: https://registry.npmjs.org/@swc/helpers/0.3.17
+Repository revision: https://github.com/swc-project/swc/tree/a239a7b34864d49c8bbbd2345c617b9046eb80b7
+Published package: @swc/helpers@0.3.17
+Author (package.json): 강동윤 <kdy1997.dev@gmail.com>
+License declaration (package.json): MIT
+
+This published package contains no standalone license file or copyright notice.
+The author attribution and MIT declaration above are reproduced from its package
+metadata. The standard MIT terms are included below; no copyright owner or year
+has been inferred from the author field.
+
+The helper package's MIT declaration is distinct from the SWC monorepo root's
+Apache 2.0 license. That repository license is retained separately below as an
+upstream notice; it does not replace the published helper package's declaration.
+Source: https://raw.githubusercontent.com/swc-project/swc/a239a7b34864d49c8bbbd2345c617b9046eb80b7/LICENSE

@@ -1,0 +1,15 @@
+Source: https://registry.npmjs.org/fontkit/1.9.0
+Repository revision: https://github.com/foliojs/fontkit/tree/fc8d99b8f5a8767aba8a8a89e2ada83cd1b099b3
+Published package: fontkit@1.9.0
+Author (package.json): Devon Govett <devongovett@gmail.com>
+License declaration (package.json): MIT
+
+This published package contains no standalone license file or copyright notice.
+The author attribution and MIT declaration above are reproduced from its package
+metadata. The standard MIT terms are included below; no copyright owner or year
+has been inferred from the author field.
+
+Published README.md license section:
+## License
+
+MIT

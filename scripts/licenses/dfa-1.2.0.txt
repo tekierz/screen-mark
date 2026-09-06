@@ -1,0 +1,15 @@
+Source: https://registry.npmjs.org/dfa/1.2.0
+Repository revision: https://github.com/devongovett/dfa/tree/3f5e603e5082caedabefefdf53e8a6ca3111e966
+Published package: dfa@1.2.0
+Author (package.json): Devon Govett <devongovett@gmail.com>
+License declaration (package.json): MIT
+
+This published package contains no standalone license file or copyright notice.
+The author attribution and MIT declaration above are reproduced from its package
+metadata. The standard MIT terms are included below; no copyright owner or year
+has been inferred from the author field.
+
+Published README.md license section:
+## License
+
+MIT

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.1
+
+**Fixed**
+- Preserve user budget content with bounded generated-table ownership, escaped cells, strict amounts and exact cent arithmetic.
+- Bound PDF fields and continuation pages; reject unsupported glyphs, empty output and title overflow before writing. Preserve Fountain types through explicit forcing and reject ambiguous literals.
+- Keep preview updates on the current document; preserve comments and UTF-16 offsets during numbering; fix marker completion ranges and multi-root budget destinations.
+- Escape report cells, safely collect production tags, and measure conservative scene eighths from retained rows in the complete paginated layout. Label dialogue-derived names as speaking cast.
+
+**Release**
+- Pin Bun and the VSIX packager; bundle PDFKit runtime data and third-party notices. Verify the locally packaged artifact in an isolated real editor host.
+
 ## 0.3.0
 
 **Added**
