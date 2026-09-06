@@ -1,0 +1,213 @@
+$ bun scripts/release.ts
+bun install v1.3.11 (af24e281)
+
+Checked 352 installs across 377 packages (no changes) [42.00ms]
+$ bun run typecheck && bun run test && bun run build
+$ tsc --noEmit
+$ bun test ./test/*.test.ts
+bun test v1.3.11 (af24e281)
+
+test/breakdown.test.ts:
+(pass) breakdown extracts slug parts, cast, numbers, tags [3.05ms]
+(pass) tags before the first scene are ignored [0.07ms]
+(pass) non-standard slug falls back to OTHER [0.07ms]
+(pass) formatEighths
+(pass) reports render and CSV escapes commas [0.46ms]
+(pass) schedule groups by location with night last and packs by pages [0.32ms]
+(pass) a scene larger than a day still gets scheduled alone [0.35ms]
+(pass) CSV defuses formula-like cells
+(pass) tags in an unclosed note still collect [0.12ms]
+(pass) prototype-named tags remain ordinary own categories [0.05ms]
+(pass) seven occupied rows round upward to two eighths [0.03ms]
+(pass) Markdown reports escape delimiter-rich cells and explain speaking cast
+(pass) 54 occupied rows are eight eighths and explicit breaks do not charge unused tails
+(pass) interscene spacing belongs to the following scene and per-scene rounding is conservative [0.60ms]
+
+test/budget.test.ts:
+(pass) parseBudget sums sections and grand totals [0.09ms]
+(pass) upsertTotals appends then replaces in place [9.28ms]
+(pass) totals section stays put when other sections follow it [0.42ms]
+(pass) template parses cleanly with zero totals [0.40ms]
+(pass) variance directions [0.42ms]
+(pass) user notes below the Totals table survive regeneration [0.53ms]
+(pass) h3 subsection between Totals and next h2 survives [0.47ms]
+(pass) legacy Totals block without end sentinel is bounded by the table, not the next h2 [0.27ms]
+(pass) upsertTotals is exactly idempotent [0.43ms]
+(pass) invalid nonempty amounts fail with source location [0.50ms]
+(pass) valid amounts retain decimal dollars and exact cent equality [0.68ms]
+(pass) sum and variance overflow are rejected [0.09ms]
+(pass) unowned Totals headings and source tables remain untouched and contribute [0.13ms]
+(pass) multiple owned blocks refresh in place without losing intervening bytes [0.93ms]
+(pass) distant sentinels and adjacent tables cannot expand generated ownership [0.06ms]
+(pass) legacy block without Total row stops before an adjacent table header [0.32ms]
+(pass) malformed owned regions fail before replacement
+(pass) escaped pipes and odd/even backslash runs retain correct columns
+(pass) data row width is validated and table headers reset after prose
+(pass) CRLF refreshes and appends preserve all untouched bytes [1.08ms]
+(pass) section names are escaped in generated Markdown cells [0.15ms]
+(pass) a section named like the final Total row cannot truncate generated ownership [0.54ms]
+(pass) large decimal amounts must survive both directions of the public cent round-trip
+(pass) empty marked tables are rejected as ambiguous generated blocks [0.09ms]
+
+test/editor.test.ts:
+(pass) numbering uses parsed scenes and original UTF-16 offsets outside comments [176.54ms]
+(pass) completion replaces existing closing stars and filters on markers [2.38ms]
+(pass) preview pending edit cannot switch back to previous document [707.94ms]
+(pass) budget destination follows active root and only FileNotFound creates [20.08ms]
+(pass) ambiguous folder cancellation creates nothing [10.42ms]
+(pass) invalid budget input reports error without edits [10.30ms]
+(pass) failed workspace edit is reported [5.54ms]
+(pass) PDF and Fountain validation reject before writes [6.43ms]
+(pass) failed external PDF opening is reported [11.80ms]
+(pass) disposing preview cancels pending renders [354.87ms]
+(pass) scene and transition completions include their trigger in filter text [3.31ms]
+(pass) budget destination uses sole folder or explicit folder picker selection [6.88ms]
+
+test/fountain.test.ts:
+(pass) title page mapping [0.33ms]
+(pass) standard slugline passes through, non-standard is dot-forced [0.08ms]
+(pass) scene number is preserved [0.04ms]
+(pass) lowercase character cue is @-forced, dual gets caret [0.04ms]
+(pass) dialogue parts serialize in order [0.12ms]
+(pass) all-caps action line is guarded with ! [0.07ms]
+(pass) transitions: standard stays plain, custom is >-forced [0.03ms]
+(pass) centered, section, pagebreak [0.05ms]
+(pass) only the first line of a multi-line all-caps action is guarded [0.05ms]
+(pass) independent import retains forced action and numeric/non-Roman cues [1.45ms]
+(pass) independent import preserves literal inline markers and boneyard text [0.02ms]
+(pass) independent import retains genuine structural and dialogue tokens [0.45ms]
+(pass) unrepresentable control collisions report source locations [0.40ms]
+(pass) independent visible text survives escaped dialogue markers and title metadata [0.21ms]
+(pass) literal note delimiters spanning dialogue parts fail before import can hide speech [0.18ms]
+(pass) unmatched note brackets in separate tokens remain visible [0.07ms]
+(pass) independent import keeps ambiguous transitions and bare scene prefixes in their intended types [0.32ms]
+
+test/parser.test.ts:
+(pass) frontmatter is parsed and lowercased [0.08ms]
+(pass) scene heading with and without number [0.04ms]
+(pass) sections at depth 1 and 3; depth 2 is always a scene [0.01ms]
+(pass) dialogue block with parenthetical, lines, and lyric [0.04ms]
+(pass) dual dialog marker [0.05ms]
+(pass) blank line ends a dialog block [0.01ms]
+(pass) parenthetical outside dialog falls back to action [0.01ms]
+(pass) centered vs dialog disambiguation [0.01ms]
+(pass) transition, pagebreak, standalone lyric [0.02ms]
+(pass) consecutive action lines merge; blank splits paragraphs [0.03ms]
+(pass) notes are stripped but line numbers preserved [0.03ms]
+(pass) pagebreak dashes are not confused with frontmatter [0.04ms]
+
+test/pdf.test.ts:
+(pass) wrap respects width and hard-splits long words
+(pass) sample screenplay renders to a multi-page PDF [5.85ms]
+(pass) scene numbers and dual dialog do not crash the layout [2.40ms]
+(pass) long speech splits with (MORE) / (CONT'D) [0.33ms]
+(pass) dual dialogue block near page bottom moves whole to next page [0.01ms]
+(pass) sections cannot erase explicit page breaks [0.15ms]
+(pass) exact 50-row filler leaves short dialogue intact on the next page [0.04ms]
+(pass) scene heading stays with dialogue cue and speech transitively [0.15ms]
+(pass) every text span stays inside its assigned body or scene-number gutter [0.11ms]
+(pass) oversized dual dialogue repeats cues and retains all speech exactly once [2.19ms]
+(pass) unsupported rendered glyphs and empty printable scripts reject exports [3.03ms]
+(pass) oversized title metadata is rejected rather than clipped [0.18ms]
+(pass) a scene plus page-sized dialogue splits their oversized combined keep group [0.81ms]
+(pass) wrapped continuation cues count against capacity and retain source scene ownership [2.15ms]
+(pass) long dialogue starts with spoken text before MORE when a parenthetical leads it [0.41ms]
+(pass) trailing parentheticals share their continuation page with retained speech [0.52ms]
+(pass) dual continuation boundaries retain speech for every continuing column [1.32ms]
+(pass) impossible parenthetical runs reject instead of creating speechless continuations [0.29ms]
+(pass) pending scenes follow their parenthetical and first spoken row onto the next page [0.40ms]
+
+ 98 pass
+ 0 fail
+Ran 98 tests across 6 files. [1460.00ms]
+$ bun esbuild.js
+built dist/extension.js with PDFKit runtime data and notices
+$ bun scripts/generate-samples.ts
+Regenerated samples/coffee PDF, Fountain, breakdown and schedule
+PDF extraction passed: 205 speech tokens and supported glyphs. Rendered inspection files: /var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-pdf-WyUHjQ
+$ bun scripts/editor-smoke.ts
+[90m[main 2026-09-06T03:38:30.817Z][0m update#setState disabled
+[90m[main 2026-09-06T03:38:30.819Z][0m update#ctor - updates are disabled by the environment
+Via 'product.json#extensionEnabledApiProposals' extension 'ms-vsliveshare.vsliveshare' wants API proposal 'notebookCellExecutionState' but that proposal DOES NOT EXIST. Likely, the proposal has been finalized (check 'vscode.d.ts') or was abandoned.
+Via 'product.json#extensionEnabledApiProposals' extension 'ms-python.gather' wants API proposal 'notebookCellExecutionState' but that proposal DOES NOT EXIST. Likely, the proposal has been finalized (check 'vscode.d.ts') or was abandoned.
+Via 'product.json#extensionEnabledApiProposals' extension 'ms-python.vscode-pylance' wants API proposal 'mcpConfigurationProvider' but that proposal DOES NOT EXIST. Likely, the proposal has been finalized (check 'vscode.d.ts') or was abandoned.
+Started local extension host with pid 98383.
+Started initializing default profile extensions in extensions installation folder. file:///var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-host-tqHkLJ/extensions
+ComputeTargetPlatform: darwin-arm64
+ChatSessionStore: Migrating 0 chat sessions from storage service to file system
+Completed initializing default profile extensions in extensions installation folder. file:///var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-host-tqHkLJ/extensions
+Loading development extension at /Users/tiki7/Desktop/Projects/screen-mark
+Settings Sync: Account status changed from uninitialized to unavailable
+[90m[main 2026-09-06T03:38:35.274Z][0m Extension host with pid 98383 exited with code: 0, signal: unknown.
+{
+  "editor": "1.101.1",
+  "extensionPath": "/Users/tiki7/Desktop/Projects/screen-mark",
+  "version": "0.3.1",
+  "checks": [
+    "UTF-16 comment numbering and idempotence",
+    "real auto-close typing and suggest acceptance",
+    "preview document switching",
+    "second-root budget and refresh",
+    "packaged PDF runtime"
+  ]
+}
+Smoke profile and evidence: /var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-host-tqHkLJ
+ INFO  Files included in the VSIX:
+screen-mark-0.3.1.vsix
+├─ [Content_Types].xml 
+├─ extension.vsixmanifest 
+└─ extension/
+   ├─ LICENSE.txt [1.04 KB]
+   ├─ THIRD-PARTY-NOTICES.md [105.12 KB]
+   ├─ changelog.md [2.43 KB]
+   ├─ language-configuration.json [0.42 KB]
+   ├─ package.json [5.54 KB]
+   ├─ readme.md [5.96 KB]
+   ├─ dist/
+   │  ├─ extension.js [3.24 MB]
+   │  └─ data/ (15 files) [630.29 KB]
+   ├─ media/
+   │  ├─ activity-icon.svg [0.37 KB]
+   │  └─ icon.png [2.23 KB]
+   ├─ samples/
+   │  ├─ coffee.breakdown.csv [0.35 KB]
+   │  ├─ coffee.breakdown.md [0.91 KB]
+   │  ├─ coffee.fountain [1.11 KB]
+   │  ├─ coffee.pdf [3.4 KB]
+   │  ├─ coffee.schedule.md [0.84 KB]
+   │  └─ coffee.screen.md [1.39 KB]
+   ├─ snippets/
+   │  └─ screenmark.json [1.47 KB]
+   └─ syntaxes/
+      └─ screenmark.tmLanguage.json [4.59 KB]
+
+=> Run vsce ls --tree to see all included files.
+
+ DONE  Packaged: screen-mark-0.3.1.vsix (34 files, 727.26 KB)
+Installing extensions...
+Extension 'screen-mark-0.3.1.vsix' was successfully installed.
+[90m[main 2026-09-06T03:38:36.793Z][0m update#setState disabled
+[90m[main 2026-09-06T03:38:36.794Z][0m update#ctor - updates are disabled by the environment
+Via 'product.json#extensionEnabledApiProposals' extension 'ms-vsliveshare.vsliveshare' wants API proposal 'notebookCellExecutionState' but that proposal DOES NOT EXIST. Likely, the proposal has been finalized (check 'vscode.d.ts') or was abandoned.
+Via 'product.json#extensionEnabledApiProposals' extension 'ms-python.gather' wants API proposal 'notebookCellExecutionState' but that proposal DOES NOT EXIST. Likely, the proposal has been finalized (check 'vscode.d.ts') or was abandoned.
+Via 'product.json#extensionEnabledApiProposals' extension 'ms-python.vscode-pylance' wants API proposal 'mcpConfigurationProvider' but that proposal DOES NOT EXIST. Likely, the proposal has been finalized (check 'vscode.d.ts') or was abandoned.
+ChatSessionStore: Migrating 0 chat sessions from storage service to file system
+Started local extension host with pid 98560.
+ComputeTargetPlatform: darwin-arm64
+Loading development extension at /var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-host-Fwb0eQ/extensions/tikilabs.screen-mark-0.3.1
+Settings Sync: Account status changed from uninitialized to unavailable
+[90m[main 2026-09-06T03:38:41.189Z][0m Extension host with pid 98560 exited with code: 0, signal: unknown.
+{
+  "editor": "1.101.1",
+  "extensionPath": "/var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-host-Fwb0eQ/extensions/tikilabs.screen-mark-0.3.1",
+  "version": "0.3.1",
+  "checks": [
+    "UTF-16 comment numbering and idempotence",
+    "real auto-close typing and suggest acceptance",
+    "preview document switching",
+    "second-root budget and refresh",
+    "packaged PDF runtime"
+  ]
+}
+Smoke profile and evidence: /var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-host-Fwb0eQ
+Verified local release: /Users/tiki7/Desktop/Projects/screen-mark/screen-mark-0.3.1.vsix (34 archive entries)

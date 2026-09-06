@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="data:,">
+  <title>ScreenMark — remediation specification</title>
+  <style>
+    :root { color-scheme: light; --ink:#182a35; --muted:#526873; --line:#d7dfda; --accent:#00695f; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:#f4f3ee; color:var(--ink); font:17px/1.65 system-ui,-apple-system,sans-serif; }
+    main { max-width:1100px; margin:auto; padding:54px 30px 80px; }
+    header { border-bottom:2px solid var(--ink); padding-bottom:28px; }
+    .eyebrow { color:var(--accent); text-transform:uppercase; letter-spacing:2px; font-size:12px; font-weight:750; }
+    h1 { font-size:clamp(34px,5vw,55px); line-height:1.12; letter-spacing:-1.7px; margin:18px 0; }
+    h2 { font-size:28px; line-height:1.25; letter-spacing:-.5px; margin:0 0 16px; }
+    h3 { font-size:19px; margin:22px 0 8px; }
+    p { margin:10px 0 16px; }
+    section { margin-top:40px; scroll-margin-top:24px; }
+    a { color:var(--accent); text-underline-offset:3px; }
+    nav { display:flex; gap:10px 20px; flex-wrap:wrap; margin-top:24px; font-size:14px; }
+    .lead { font-size:20px; max-width:880px; }
+    .note { border-left:4px solid var(--accent); background:#e5eee7; padding:18px 22px; border-radius:0 8px 8px 0; }
+    .status { display:inline-block; border-radius:5px; padding:3px 9px; background:#ffe8bb; color:#775000; font-size:12px; font-weight:750; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    .card { background:white; border:1px solid var(--line); border-radius:10px; padding:21px; }
+    .card h3 { margin-top:0; }
+    .table { overflow-x:auto; border:1px solid var(--line); border-radius:8px; background:white; }
+    table { width:100%; border-collapse:collapse; font-size:14px; text-align:left; }
+    th,td { padding:12px 14px; vertical-align:top; border-bottom:1px solid var(--line); }
+    th { background:#e6ede7; font-size:12px; text-transform:uppercase; letter-spacing:.5px; }
+    tr:last-child td { border-bottom:0; }
+    code { font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace; overflow-wrap:anywhere; }
+    ul,ol { padding-left:23px; }
+    li { margin:7px 0; }
+    .small { font-size:13px; color:var(--muted); }
+    .checklist { list-style:none; padding-left:0; }
+    .checklist li { padding-left:26px; position:relative; }
+    .checklist li::before { content:'□'; position:absolute; left:0; color:var(--accent); }
+    footer { border-top:1px solid var(--line); padding-top:20px; margin-top:45px; }
+    @media(max-width:700px) { main { padding:28px 18px 50px; } .grid { grid-template-columns:1fr; } h2 { font-size:25px; } .lead { font-size:18px; } }
+    @media print { body { background:white; font-size:11px; } main { padding:0; max-width:none; } h1 { font-size:32px; } h2 { font-size:21px; } section { margin-top:24px; } nav { display:none; } .card,tr,.note { break-inside:avoid; } table { font-size:10px; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">ScreenMark / implementation specification / 5 September 2026</div>
+    <h1>Preserve data.<br>Make outputs and releases reliable.</h1>
+    <p class="lead">Implement the five remediation workstreams selected from the <a href="audit.html">project audit</a>, with explicit behavior contracts and regression evidence before producing a fresh local VSIX.</p>
+    <p><span class="status">Implemented — local candidate verified</span></p>
+    <p class="small">This document is the implementation check-in required by the supplied AGENTS.md instructions. The user approved implementation on 5 September 2026. See the <a href="remediation-results.html">completion report</a> for final evidence. The original audit remains a historical baseline.</p>
+    <nav aria-label="Specification sections">
+      <a href="#decisions">Decisions</a><a href="#data">1 · Data</a><a href="#output">2 · Output</a><a href="#editor">3 · Editor</a><a href="#planning">4 · Planning</a><a href="#release">5 · Release</a><a href="#execution">Execution &amp; acceptance</a>
+    </nav>
+  </header>
+
+  <section id="decisions">
+    <h2>Approved implementation decisions</h2>
+    <div class="grid">
+      <div class="card"><h3>Financial input is strict</h3><p>Blank amount cells remain allowed. Invalid nonempty amounts, sub-cent values and unsafe magnitudes stop Budget Summary with a source-located error and leave the document untouched. Arithmetic uses integer cents internally.</p></div>
+      <div class="card"><h3>PDF glyph failures are explicit</h3><p>Keep the current Courier fonts and their Western European character coverage. Unsupported rendered characters, empty printable output and title metadata that cannot fit produce clear errors before any output file is written.</p></div>
+      <div class="card"><h3>Scene estimates are conservative</h3><p>Measure retained rows in the complete paginated screenplay, then round each scene up to an eighth. The sum is a scheduling estimate and may exceed physical page count, especially for many short scenes.</p></div>
+      <div class="card"><h3>Produce a local 0.3.1 candidate</h3><p>Use Bun throughout, pin the packager, bundle PDFKit with its runtime data and notices, and test the packaged artifact in an isolated editor profile. The deliverable is a verified local VSIX and an HTML completion report.</p></div>
+    </div>
+  </section>
+
+  <section id="data">
+    <div class="eyebrow">1 / Preserve data</div>
+    <h2>Owned totals, correct tables and exact cents</h2>
+    <h3>Generated-region ownership</h3>
+    <p>A <code>Totals</code> heading alone does not grant replacement ownership. A generated block must have the existing ScreenMark generated marker immediately beneath its heading, followed by the recognizable Section / Estimate / Actual / Variance table. Parsing and replacement will share one bounded region scanner.</p>
+    <ul>
+      <li>Scan only the generated table, stopping at its final generated Total row when present. A closing marker is valid only at that local boundary; never search across notes or later sections for a distant sentinel.</li>
+      <li>Support legacy marker-plus-table blocks without a closing marker by adding one at the table boundary. Do not absorb an adjacent second table, unexpected heading, producer prose or malformed-width row. Ambiguous malformed generated blocks fail before editing.</li>
+      <li>Preserve unowned Totals headings and their content. Valid source budget tables beneath them participate in totals; only positively identified generated ranges are excluded from ingestion.</li>
+      <li>Refresh multiple independently owned blocks in place to the same result. Preserve all intervening content; do not delete duplicate blocks automatically.</li>
+      <li>Preserve untouched bytes and newline style. Reset parser section/table state when skipping generated ranges. Every successful refresh must be exactly idempotent.</li>
+    </ul>
+    <h3>Table and amount handling</h3>
+    <p>Replace raw pipe splitting with a small scanner that respects escaped pipes and odd/even backslash runs. Validate data-row width against its recognized header and reset header state when a table ends. A row such as <code>| Camera \| lens | 100 | 120 | kit |</code> must preserve the item and both amount columns.</p>
+    <p>Accept ordinary decimal dollar amounts, negative values, optional dollar symbols, correctly grouped thousands separators, and at most two decimal places. Reject nonempty invalid values such as <code>0x10</code>, <code>1e3</code>, <code>$</code>, <code>1,23</code>, <code>1 2</code> and <code>0.001</code>. Errors identify the line, section and column. Check arithmetic and variance for overflow.</p>
+    <p>Retain existing numeric-dollar result interfaces and display style, while parsing and summing integer cents internally. Normalize public numeric inputs through a safe cent round-trip so valid values such as <code>0.29</code> work. Equal-cent totals produce an em dash, never “$0 under.”</p>
+    <p class="small"><strong>Primary files:</strong> src/core/budget.ts; test/budget.test.ts; budget error handling in src/extension.ts and the editor regression suite.</p>
+    <div class="note"><strong>Acceptance:</strong> duplicate/unowned headings, distant sentinels, legacy blocks, trailing notes, adjacent tables, escaped cells, CRLF and repeated refreshes preserve input data. Invalid input applies zero editor edits. Estimates 0.10 + 0.20 and actual 0.30 compare equal.</div>
+  </section>
+
+  <section id="output">
+    <div class="eyebrow">2 / Preserve screenplay output</div>
+    <h2>Bounded rendering and semantic export</h2>
+    <h3>PDF layout</h3>
+    <ul>
+      <li>Wrap all text-bearing elements to explicit widths: scene headings and IDs, normal/dual cues, dialogue, parentheticals, action, lyrics, transitions, centered text, continuation cues and title fields. Keep the existing 12-point Courier geometry and reserve separate scene-number gutters.</li>
+      <li>Skip structural sections before inserting layout spacing. They add no rows and cannot erase a preceding explicit page break.</li>
+      <li>Compute transitive keep groups so a scene remains with its first printable content. A dialogue whose complete keep group fits on a body page moves as a whole; longer dialogue splits with paired continuation markers and retained speech on both sides. If a scene heading plus an otherwise page-sized dialogue cannot fit together, split the dialogue to preserve the scene with its first speech.</li>
+      <li>Count wrapped continuation cues in page capacity. Oversized dual dialogue repeats the relevant cues on continuation pages and retains every body row exactly once. No page exceeds the 54-row body limit.</li>
+      <li>Give title, author/credit and footer fields bounded regions. Reject metadata that cannot fit the title page rather than clipping it or shrinking type.</li>
+    </ul>
+    <h3>Character and empty-output contract</h3>
+    <p>Preflight the strings actually rendered, including intentional uppercasing. Support printable ASCII, supported Latin-1 characters and the existing PDFKit WinAnsi punctuation mapping, including curly quotes, en/em dashes and the euro sign. Layout whitespace is handled separately; unsupported control characters and glyphs are errors.</p>
+    <p>An unsupported character error reports its code point and source line or title field. No lossy replacement or silent transliteration occurs. Empty, comments-only, outline-only and breaks-only documents fail as having no printable content. A title-only document remains a valid one-page export. Existing output files remain untouched on rejection.</p>
+    <h3>Fountain semantics</h3>
+    <p>Use explicit Fountain forcing for action paragraphs and character cues so ScreenMark’s parsed types survive import, including numeric and non-Roman names. Preserve genuine scenes, sections, transitions, lyrics, centered elements, page breaks and dual dialogue. Verify literal control/inline-marker collisions with an independent importer; if text or an identifier cannot be represented faithfully, return a source-located error instead of silently changing it.</p>
+    <p>Add one exact-pinned, development-only Fountain parser for semantic test assertions; the candidate is <a href="https://github.com/jonnygreenwald/fountain-js">fountain-js</a>. Check exported tokens and visible text against the <a href="https://fountain.io/syntax/">Fountain syntax reference</a>, rather than writing a second recognizer that repeats the serializer’s assumptions.</p>
+    <p class="small"><strong>Primary files:</strong> src/core/pdf.ts; src/core/fountain.ts; test/pdf.test.ts; test/fountain.test.ts. PDF rows gain optional source scene metadata for workstream 4; the screenplay AST stays small.</p>
+    <div class="note"><strong>Acceptance:</strong> extracted supported text survives; rendered long-field/boundary fixtures have no clipping or orphans; empty/unsupported exports fail before writes; page breaks after sections survive; long single/dual dialogue retains all content; independent Fountain import retains intended types and text. Replace the misleading short-dialogue fixture with exactly counted rows.</div>
+  </section>
+
+  <section id="editor">
+    <div class="eyebrow">3 / Fix editor state and edits</div>
+    <h2>Current-document state and safe edit ranges</h2>
+    <ul>
+      <li><strong>Preview:</strong> cancel pending debounce work on immediate document switches and disposal; reject stale callbacks. Keep the existing single HTML shell, ready handshake and latest-render cache. Edit A → switch B → timeout → edit B must remain on B.</li>
+      <li><strong>Scene numbering:</strong> obtain eligible scenes and existing IDs from parser elements. Insert after the last visible heading character outside comments, preserving original UTF-16 code-unit offsets and CRLF. Frontmatter and comment contents stay unchanged; existing IDs remain intact.</li>
+      <li><strong>Budget destination:</strong> use the active document’s workspace root. Use the sole root when unambiguous; otherwise show the editor’s folder picker. Cancellation creates nothing. Only a FileNotFound error permits workbook creation; other filesystem failures do not trigger an overwrite attempt.</li>
+      <li><strong>Completions:</strong> align filter text with marker-inclusive prefixes and consume an existing closing character marker in the replacement range. Accepting at <code>**MA|**</code> must yield one complete MAYA cue and dialogue starter with no stray suffix.</li>
+      <li><strong>Errors:</strong> perform core validation inside command error handling and before writes/edits. Observe failed edits and failed external PDF opening. Keep validation rules in core and notifications in the editor adapter.</li>
+    </ul>
+    <h3>Real host verification</h3>
+    <p>Add a small async extension-host runner using the existing esbuild, VS Code API and Node assertions. Launch the installed editor with unique temporary user-data, extensions and two-root workspace directories. Keep synchronization, updates and third-party extensions out of this fixture profile.</p>
+    <p>Exercise actual typing with auto-closing enabled, trigger and accept suggestions, number commented scenes, switch preview documents before the debounce expires, and create/refresh the second root’s budget. Observe the real preview tab title and complement it with mock assertions on rendered message bodies; the public VS Code API does not expose webview DOM contents.</p>
+    <p class="small"><strong>Primary files:</strong> src/extension.ts; src/features/preview.ts; src/features/completions.ts; new test/editor.test.ts; test/extension-host/smoke.ts; one small host launcher under scripts/.</p>
+    <div class="note"><strong>Acceptance:</strong> targeted mocks and a real isolated host run both pass. The real suggest widget accepts marker-prefixed completions with automatic closing enabled. Rapid switching stays on the active screenplay. A second numbering invocation makes no changes, including for headings/comments containing emoji.</div>
+  </section>
+
+  <section id="planning">
+    <div class="eyebrow">4 / Define planning contracts</div>
+    <h2>Safe reports and explicitly measured eighths</h2>
+    <p>Initialize production tag arrays using own-property checks so <code>@constructor: crane</code> is a safe ordinary category. Keep the existing plain-object shape and category syntax.</p>
+    <p>Add one small <code>escapeMarkdownCell</code> helper shared by budget, breakdown and schedule tables. Escape backslashes and pipes and normalize embedded line breaks; apply intentional Markdown styling after escaping content. Preserve machine-facing CSV field names while labeling human-facing cast columns “Speaking cast.” Explain that only dialogue cues contribute names and silent performers are not inferred.</p>
+    <h3>Occupied-eighths definition</h3>
+    <ol>
+      <li>Lay out and paginate the complete screenplay once using the corrected PDF engine.</li>
+      <li>Attribute retained body rows to their source scene. The following scene owns interscene spacing; continuation rows inherit their dialogue’s scene.</li>
+      <li>Count content and retained spacing/continuation rows. Exclude the title page, pre-scene material, control markers, discarded leading blanks and unused page tails.</li>
+      <li>Compute each scene as <code>max(1, ceil(occupiedRows × 8 / 54))</code>. Total eighths is the sum of scene estimates used by scheduling.</li>
+    </ol>
+    <p>Seven occupied rows therefore require two eighths; fifty-four require eight. Rounding up each scene is conservative and can substantially inflate a script containing many short scenes. Reports will explicitly distinguish these estimates from physical PDF page count. The existing location and exact day/night ordering remains a draft scheduling heuristic.</p>
+    <p class="small"><strong>Primary files:</strong> src/core/markdown.ts (new); src/core/breakdown.ts; src/core/schedule.ts; shared PDF scene-row metadata; test/breakdown.test.ts; README.md; regenerated sample reports.</p>
+    <div class="note"><strong>Acceptance:</strong> adversarial tag keys do not throw; delimiter-rich fields keep the expected table columns; every retained scene row has one owner; eighths match the declared full-layout formula; explicit breaks do not charge unused tails; schedule totals use those same eighths.</div>
+  </section>
+
+  <section id="release">
+    <div class="eyebrow">5 / Verify a coherent release</div>
+    <h2>A pinned Bun workflow and an artifact-based smoke test</h2>
+    <ul>
+      <li>Make Bun the documented package manager and use one committed <code>bun.lock</code>; migrate away from the stale package-lock rather than maintaining two competing lockfiles. Pin a Bun version through package metadata and pin the packager to a verified exact version. The locally inspected candidate is <code>@vscode/vsce@3.9.2</code>.</li>
+      <li>Run typecheck, focused/full tests and build through a single verified package entry point. Replace npm debug tasks with an explicit Bun build task. Remove the packager’s npm-based prepublish hook and invoke verification directly from the Bun release command.</li>
+      <li>Bundle PDFKit’s runtime graph with the extension, copy its required data directory alongside the bundle, and ship bundled third-party license notices. Package with dependency discovery disabled, so vsce does not invoke npm or enumerate node_modules.</li>
+      <li>Exclude source tests/tooling, dependency fixtures/browser copies, local workbooks, source maps, lockfiles and audit/specification reports from the VSIX. Keep intended source/generated samples, required runtime data, icon/grammar/snippets and license notices.</li>
+      <li>Disable automatic issue-link rewriting in packaged README examples. Check code examples after packaging, while retaining valid image and documentation links.</li>
+      <li>Prepare version 0.3.1 consistently across package metadata, lock metadata, changelog, installation instructions and artifact name. Regenerate the sample PDF and planning outputs from current source; remove stale author/navigation/page/cast claims.</li>
+      <li>Install the fresh VSIX into a disposable extensions directory and run the host smoke against that installed artifact. Assert its loaded extension path and runtime assets belong to the package, not the source workspace.</li>
+    </ul>
+    <p>The package command must fail on a failed check. A mock-only pass cannot satisfy the real-host gate. A separate HTML completion report will record test counts, editor version, PDF inspection, archive contents, remaining limits and the final artifact path.</p>
+    <p class="small"><strong>Primary files:</strong> package.json; bun.lock; esbuild.js; .vscodeignore; .vscode/launch.json; .vscode/tasks.json (new); lean scripts/ verification helpers; README.md; CHANGELOG.md; generated sample/artifact outputs; docs/remediation-results.html.</p>
+    <div class="note"><strong>Acceptance:</strong> fresh local VSIX passes isolated installed-artifact smoke; code examples are intact; runtime assets/notices are present; unused dependency fixtures and audit docs are absent; versions and packaged docs agree. The release command uses Bun without hidden npm/yarn calls.</div>
+  </section>
+
+  <section id="execution">
+    <h2>Execution order and ownership</h2>
+    <div class="table">
+      <table>
+        <thead><tr><th>Stage</th><th>Parallel work</th><th>Integration checkpoint</th></tr></thead>
+        <tbody>
+          <tr><td>1 · Lock regressions</td><td>Astra high: data and PDF/Fountain cases. Astra medium: editor mocks/host harness. Primary: release checks and shared contracts.</td><td>Each new regression demonstrates the audited failure before its fix; independent review checks destructive edit boundaries.</td></tr>
+          <tr><td>2 · Core and editor fixes</td><td>Data, output and editor owners edit separate assigned files. One owner handles each shared file.</td><td>Focused tests pass. PDF source-scene row contract stabilizes before planning measurement integrates.</td></tr>
+          <tr><td>3 · Planning and integration</td><td>Planning adopts full-layout metadata and table escaping; primary integrates command failure handling and docs.</td><td>Full suite, typecheck, PDF extraction/rendering, Fountain semantic import and real development-host flow pass.</td></tr>
+          <tr><td>4 · Release candidate</td><td>Primary builds package; Astra low checks inventory/metadata; Astra high independently reviews financial/layout changes.</td><td>Packaged host smoke, archive assertions and final HTML evidence pass before completion is claimed.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>Concrete feasibility evidence already gathered</h3>
+    <ul>
+      <li>Local VS Code 1.101.1 and Cursor are available. The local VS Code CLI supports isolated profile paths and the bundled extension host supports an async test runner without a new test framework.</li>
+      <li>The cached vsce 3.9.2 implementation exposes dependency-discovery and issue-linking controls. Its ordinary prepublish and dependency discovery paths invoke npm/yarn, which is why the release design bypasses those paths.</li>
+      <li>A temporary PDFKit bundle outside the repo rendered a valid two-page US Letter PDF with copied runtime data. Poppler extracted the expected title, heading and body. This proves basic bundling feasibility; it does not replace testing the final packaged extension.</li>
+      <li>Three Astra planning reviews and an independent high-reasoning challenge identified generated-table ownership, parser-state reset, UTF-16 offsets and cent-normalization edge cases now included above.</li>
+    </ul>
+    <h3>Completion checklist</h3>
+    <ul class="checklist">
+      <li>All five workstreams’ acceptance cases pass, including destructive-edit and failure-before-write cases.</li>
+      <li>Existing tests remain meaningful; changed expectations are justified by the explicit contracts above.</li>
+      <li>Rendered/extracted PDFs and independently imported Fountain fixtures preserve supported output.</li>
+      <li>Real editor typing, suggestion acceptance and rapid preview switching pass in an isolated profile.</li>
+      <li>Fresh packaged artifact passes runtime, contents and metadata checks.</li>
+      <li>Independent review is resolved and the HTML completion report records evidence and any verified limits.</li>
+    </ul>
+    <p class="small">Implementation remains limited to the five selected workstreams. The audit’s separate outline-nesting, inline-comment-highlighting and comment-only-dialogue policy observations are not required changes here. No new tasks/ directory is planned. No Git operation, marketplace publication or deployment is part of the local release-candidate workflow.</p>
+  </section>
+  <footer class="small">Prepared from the current project and its audit. The user completed the specification check-in before source implementation under the supplied AGENTS.md rule: “write the spec, check in before implementing.”</footer>
+</main>
+</body>
+</html>

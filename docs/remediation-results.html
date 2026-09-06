@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light"><link rel="icon" href="data:,"><title>ScreenMark 0.3.1 — remediation results</title><style>
+    :root { color-scheme: light; --ink:#182a35; --muted:#526873; --line:#d7dfda; --accent:#00695f; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:#f4f3ee; color:var(--ink); font:17px/1.65 system-ui,-apple-system,sans-serif; }
+    main { max-width:1100px; margin:auto; padding:54px 30px 80px; }
+    header { border-bottom:2px solid var(--ink); padding-bottom:28px; }
+    .eyebrow { color:var(--accent); text-transform:uppercase; letter-spacing:2px; font-size:12px; font-weight:750; }
+    h1 { font-size:clamp(34px,5vw,55px); line-height:1.12; letter-spacing:-1.7px; margin:18px 0; }
+    h2 { font-size:28px; line-height:1.25; letter-spacing:-.5px; margin:0 0 16px; }
+    h3 { font-size:19px; margin:22px 0 8px; }
+    p { margin:10px 0 16px; }
+    section { margin-top:40px; scroll-margin-top:24px; }
+    a { color:var(--accent); text-underline-offset:3px; }
+    nav { display:flex; gap:10px 20px; flex-wrap:wrap; margin-top:24px; font-size:14px; }
+    .lead { font-size:20px; max-width:880px; }
+    .note { border-left:4px solid var(--accent); background:#e5eee7; padding:18px 22px; border-radius:0 8px 8px 0; }
+    .status { display:inline-block; border-radius:5px; padding:3px 9px; background:#ffe8bb; color:#775000; font-size:12px; font-weight:750; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    .card { background:white; border:1px solid var(--line); border-radius:10px; padding:21px; }
+    .card h3 { margin-top:0; }
+    .table { overflow-x:auto; border:1px solid var(--line); border-radius:8px; background:white; }
+    table { width:100%; border-collapse:collapse; font-size:14px; text-align:left; }
+    th,td { padding:12px 14px; vertical-align:top; border-bottom:1px solid var(--line); }
+    th { background:#e6ede7; font-size:12px; text-transform:uppercase; letter-spacing:.5px; }
+    tr:last-child td { border-bottom:0; }
+    code { font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace; overflow-wrap:anywhere; }
+    ul,ol { padding-left:23px; }
+    li { margin:7px 0; }
+    .small { font-size:13px; color:var(--muted); }
+    .checklist { list-style:none; padding-left:0; }
+    .checklist li { padding-left:26px; position:relative; }
+    .checklist li::before { content:'□'; position:absolute; left:0; color:var(--accent); }
+    footer { border-top:1px solid var(--line); padding-top:20px; margin-top:45px; }
+    @media(max-width:700px) { main { padding:28px 18px 50px; } .grid { grid-template-columns:1fr; } h2 { font-size:25px; } .lead { font-size:18px; } }
+    @media print { body { background:white; font-size:11px; } main { padding:0; max-width:none; } h1 { font-size:32px; } h2 { font-size:21px; } section { margin-top:24px; } nav { display:none; } .card,tr,.note { break-inside:avoid; } table { font-size:10px; } }
+  </style></head>
+<body><main>
+<header><div class="eyebrow">ScreenMark / local release candidate / 5 September 2026</div><h1>Remediation results</h1><p class="lead">All five approved workstreams are implemented and independently reviewed. The final local 0.3.1 VSIX passes 98 regression tests, PDF checks and isolated installed-artifact editor verification.</p><p><span class="status">Complete — local candidate verified</span></p><nav><a href="#changes">Changes</a><a href="#evidence">Evidence</a><a href="#review">Review findings resolved</a><a href="#limits">Verified limits</a><a href="#artifact">Artifact</a></nav></header>
+<section id="changes"><h2>Delivered behavior</h2><div class="table"><table><thead><tr><th>Workstream</th><th>Result</th></tr></thead><tbody>
+<tr><td>Budget data</td><td>One bounded scanner identifies owned generated tables for both ingestion and replacement. Duplicate owned blocks refresh in place, user content survives, escaped cells retain their columns, and CRLF stays intact. Strict decimal amounts use exact cents with checked sums and variance; rejected input causes no editor edits.</td></tr>
+<tr><td>Screenplay output</td><td>PDF text wraps within explicit body, cue, gutter and title regions. Pagination retains scene ownership and continuation content within 54 body rows. Unsupported glyphs, empty printable output and title overflow fail before writes. Fountain exports use explicit forcing and independently checked literal handling; unrepresentable text returns a source-located error.</td></tr>
+<tr><td>Editor behavior</td><td>Preview cancels stale work on document switches and disposal. Scene numbering uses parsed scenes with original UTF-16 offsets outside comments. Completions replace existing closing markers. Budget destination follows the active workspace root, and non-FileNotFound failures cannot trigger workbook creation. Failed edits and PDF opening produce notifications.</td></tr>
+<tr><td>Planning</td><td>Production tag categories use own-property checks; report tables share cell escaping. Speaking cast includes dialogue cues only. Full-screenplay pagination measures retained scene rows and rounds each scene up to eighths. Scheduling uses those same estimates.</td></tr>
+<tr><td>Release</td><td>Bun 1.3.11 and vsce 3.9.2 are pinned. PDFKit, runtime font data and third-party notices are bundled. One frozen Bun lock replaces package-lock. Debug tasks, documentation, changelog and package metadata use the new workflow and version.</td></tr>
+</tbody></table></div></section>
+<section id="evidence"><h2>Verification evidence</h2><ul>
+<li><strong>Regression checks:</strong> 98 tests pass across parser, budget, output, planning and editor mocks. Typecheck and bundled build pass.</li>
+<li><strong>Before/after evidence:</strong> budget baseline exposed 12 failures; PDF baseline exposed seven; editor baseline exposed seven; planning exposed three. Independent-importer regressions also failed before the corresponding Fountain changes.</li>
+<li><strong>Real editor:</strong> VS Code 1.101.1, disposable user-data and extensions directories, two workspace roots. Actual typing produced auto-closed character markers; the suggest widget accepted a complete cue. Numbering was idempotent with emoji/comments, preview stayed on document B after rapid switching, and budget creation/refresh used root two.</li>
+<li><strong>Installed artifact:</strong> the fresh VSIX was installed into an empty temporary extensions directory. The runner asserted that the activated extension path and Courier runtime data belonged to that installation, then exported a PDF through the actual command.</li>
+<li><strong>PDF extraction and visual inspection:</strong> the regenerated three-page Cold Brew sample and a four-page stress fixture were rendered with Poppler. All inspected pages had bounded text, distinct columns and legible continuation cues. The final sample/stress PNGs exactly match all seven visually inspected pages. The parenthetical split regression was separately rendered and inspected. The stress fixture preserved all 205 speech tokens exactly once, plus accented Latin text, curly quotes, en/em dashes and the euro sign.</li>
+<li><strong>Additional pagination probes:</strong> 1,770 unequal dual-dialogue cases retained all speech within page limits or explicitly rejected impossible cue heights. After the final speech-boundary fix, 240 seeded single/dual fixtures verified every speech and parenthetical exactly once, every continuation column with retained speech, and scene ownership without orphans.</li>
+<li><strong>Bun-only release:</strong> the complete release command passed with failing npm/yarn executables prepended to PATH. The packager runs without prepublish hooks or dependency discovery.</li>
+<li><strong>Archive assertions:</strong> version, README scene-number examples, image links, samples, bundled font data and third-party notices are checked. Source, tests, tooling, node_modules, maps, lockfiles, local budget and audit/specification files are absent.</li>
+</ul><p class="small">The real host verifies the preview tab title; mocked message-body assertions verify rendered content because the public VS Code API does not expose webview DOM contents.</p></section>
+<section id="review"><h2>Review findings resolved</h2><div class="table"><table><thead><tr><th>Finding</th><th>Correction and retained lesson</th></tr></thead><tbody>
+<tr><td>Generated table ambiguity</td><td>Marker ownership is bounded by a recognizable local table; a distant sentinel never expands a replacement range. A generated-looking Total section name cannot truncate the true generated block.</td></tr>
+<tr><td>Numeric round-trip precision</td><td>Check cent safety in both directions through the public dollar interface; safe integer cents alone do not guarantee an exact numeric-dollar round trip at large magnitudes.</td></tr>
+<tr><td>Scene plus page-sized dialogue</td><td>When a scene heading and an otherwise page-sized dialogue cannot fit together, scene continuity takes precedence and the dialogue splits with continuation markers. Whole-dialogue movement applies when the complete keep group fits.</td></tr>
+<tr><td>Parenthetical-only split boundaries</td><td>Retain dialogue-part semantics while paginating so a parenthetical is not mistaken for retained speech.</td></tr>
+<tr><td>Fountain lexer precedence</td><td>Test serialized text through an independent importer. Natural-looking transitions, bare scene prefixes and multiline note delimiters require explicit handling to preserve the parsed type and visible text.</td></tr>
+<tr><td>Incomplete dependency notices</td><td>Bundled distributions without license files use exact-version, metadata-hash-checked supplements with upstream provenance. Brotli decoder Google/Apache notices and the SWC repository notice are included separately from package-level MIT declarations. Unknown or changed omissions fail the build.</td></tr>
+</tbody></table></div></section>
+<section id="limits"><h2>Verified limits</h2><ul>
+<li>PDF uses existing Courier/WinAnsi coverage. Unsupported glyphs and impossible title/cue layouts produce errors; fonts are not shrunk or silently substituted.</li>
+<li>Fountain syntax that cannot preserve literal text is rejected. The pinned development-only importer, fountain-js 1.2.4, crashes when a dialogue starts with a lyric. That narrow valid export remains unverified by this importer; standalone lyrics and lyrics after speech are semantically verified.</li>
+<li>Scene eighths are conservative scheduling estimates, not physical page count: <code>max(1, ceil(occupiedRows × 8 / 54))</code>, summed per scene. Title/pre-scene rows, control markers and unused page tails are excluded. Silent performers are not inferred.</li>
+<li>Real-host evidence covers local macOS VS Code 1.101.1. The harness uses the installed extension directory as its development target to enable the external test runner; all extension runtime code and assets still load from the installed VSIX.</li>
+<li>Separate audit observations about outline nesting, comment highlighting and comment-only dialogue policy remain outside this approved remediation scope.</li>
+</ul></section>
+<section id="artifact"><h2>Local release candidate</h2><p><a href="../screen-mark-0.3.1.vsix">screen-mark-0.3.1.vsix</a> · 744718 bytes · 34 archive entries</p><p><code>SHA-256: ea95457ee5db5a15412dfc3b2b7cedf53a845eab90cd7f3ae4a4e5918d351858</code></p><p>Reproduce with <code>bun run package</code>. This runs frozen installation, typecheck, tests, build, sample regeneration, PDF extraction/rendering, development-host smoke, packaging, archive assertions and installed-artifact smoke.</p><p>Regenerated samples: <a href="../samples/coffee.pdf">PDF</a>, <a href="../samples/coffee.fountain">Fountain</a>, <a href="../samples/coffee.breakdown.md">breakdown</a>, <a href="../samples/coffee.breakdown.csv">CSV</a>, <a href="../samples/coffee.schedule.md">schedule</a>.</p><p class="small">Final evidence locations: <a href="remediation-release.log">complete release log</a> and <a href="remediation-host-results.json">host result records</a>; development host <code>/var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-host-tqHkLJ/result.json</code>; installed host <code>/var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-host-Fwb0eQ/result.json</code>; PDF renders <code>/var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-pdf-WyUHjQ</code>.</p></section>
+<footer class="small">Implements the <a href="remediation-spec.html">approved specification</a>. No Git operation, marketplace publication or deployment was performed.</footer>
+</main></body></html>

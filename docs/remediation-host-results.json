@@ -1,0 +1,26 @@
+{
+  "development": {
+    "editor": "1.101.1",
+    "extensionPath": "/Users/tiki7/Desktop/Projects/screen-mark",
+    "version": "0.3.1",
+    "checks": [
+      "UTF-16 comment numbering and idempotence",
+      "real auto-close typing and suggest acceptance",
+      "preview document switching",
+      "second-root budget and refresh",
+      "packaged PDF runtime"
+    ]
+  },
+  "installed": {
+    "editor": "1.101.1",
+    "extensionPath": "/var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-host-Fwb0eQ/extensions/tikilabs.screen-mark-0.3.1",
+    "version": "0.3.1",
+    "checks": [
+      "UTF-16 comment numbering and idempotence",
+      "real auto-close typing and suggest acceptance",
+      "preview document switching",
+      "second-root budget and refresh",
+      "packaged PDF runtime"
+    ]
+  }
+}
