@@ -2,7 +2,7 @@
   "name": "screen-mark",
   "displayName": "ScreenMark",
   "description": "Write screenplays in markdown. Export real screenplay PDFs — then plan the shoot with breakdowns, schedules, and budgets.",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "publisher": "tikilabs",
   "license": "MIT",
   "repository": {

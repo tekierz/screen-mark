@@ -57,11 +57,11 @@ Files are `.smark` or `*.screen.md` — the `.md` flavor still renders fine on G
 | Page break | `---` |
 | Note | `<!-- fix pacing -->` — never printed |
 
-A blank line ends a dialog block.
+An actual blank line ends a dialog block. Comment-only lines, including blank lines inside multiline notes, do not interrupt dialogue or action paragraphs. Leading notes may precede title frontmatter; a real leading blank still prevents frontmatter recognition.
 
 PDF export uses Courier’s Western European glyph coverage. Unsupported rendered characters, oversized title fields and documents without printable content produce errors before writing a file; title-only documents are valid. Fountain export forces parsed action and character types, and rejects text it cannot represent faithfully.
 
-**Editor help:** syntax highlighting, character/scene/transition autocomplete, scene outline, folding, and snippets (`title`, `scene`, `dialog`, `dual`, `trans`).
+**Editor help:** syntax highlighting, character/scene/transition autocomplete, nested scene outline, folding, inline comment highlighting, and snippets (`title`, `scene`, `dialog`, `dual`, `trans`).
 
 ## The ScreenMark sidebar
 
@@ -107,7 +107,7 @@ Scene numbers are the glue — number once, and every report keeps pointing at t
 Grab the `.vsix` from [Releases](https://github.com/tekierz/screen-mark/releases) and:
 
 ```bash
-cursor --install-extension screen-mark-0.3.1.vsix   # or: code --install-extension ...
+cursor --install-extension screen-mark-0.3.2.vsix   # or: code --install-extension ...
 ```
 
 ## Develop
@@ -119,7 +119,7 @@ bun run smoke     # real isolated VS Code host
 bun run package   # verify, regenerate samples, package, installed-artifact smoke
 ```
 
-Use Bun 1.3.11 (pinned in package metadata). The local release command produces `screen-mark-0.3.1.vsix` and fails if a check fails. It uses the exact-pinned packager with dependency discovery disabled; PDFKit, font metrics and third-party notices are bundled. Set `SCREENMARK_CODE` to your VS Code CLI path and `SCREENMARK_EDITOR` to the editor executable if they are not installed at the default macOS locations. The release PDF check requires Poppler (`pdftotext` and `pdftoppm`). Smoke tests use temporary profiles and a two-root workspace.
+Use Bun 1.3.11 (pinned in package metadata). The local release command produces `screen-mark-0.3.2.vsix` and fails if a check fails. It uses the exact-pinned packager with dependency discovery disabled; PDFKit, font metrics and third-party notices are bundled. Set `SCREENMARK_CODE` to your VS Code CLI path and `SCREENMARK_EDITOR` to the editor executable if they are not installed at the default macOS locations. The release PDF check requires Poppler (`pdftotext` and `pdftoppm`). Smoke tests use temporary profiles and a two-root workspace.
 
 Press <kbd>F5</kbd> to launch a dev host with the sample script open.
 

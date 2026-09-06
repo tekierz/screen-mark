@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.2
+
+**Fixed**
+- Comment-only lines preserve dialogue and action continuity, including multiline notes and notes before title frontmatter. Actual blank lines still separate paragraphs.
+- Outline sections nest beneath the nearest shallower section, with scenes inside their current section and ranges matching folding.
+- Inline notes receive comment highlighting within screenplay structures, with multiline comment state recovering after closure.
+
+**Verification**
+- Add real TextMate/Oniguruma scope assertions and extend isolated editor checks through short-screenplay revision, numbering, preview, exports and production reports.
+
 ## 0.3.1
 
 **Fixed**
