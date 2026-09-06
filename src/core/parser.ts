@@ -10,27 +10,46 @@ export const LYRIC_RE = /^~\s?(.*)$/;
 export const TRANSITION_RE = /^@\s?(.*)$/;
 export const PAGEBREAK_RE = /^-{3,}$/;
 
+function removeNotes(text: string): { visible: string; noteLines: Set<number> } {
+  const noteLines = new Set<number>();
+  let line = 0;
+  let previousEnd = 0;
+  const visible = text.replace(/<!--[\s\S]*?(?:-->|$)/g, (note: string, offset: number) => {
+    line += text.slice(previousEnd, offset).split('\n').length - 1;
+    const newlines = note.replace(/[^\n]/g, '');
+    const endLine = line + newlines.length;
+    // Empty physical lines inside a note are hidden too, unlike authored separators.
+    for (let noteLine = line; noteLine <= endLine; noteLine++) noteLines.add(noteLine);
+    line = endLine;
+    previousEnd = offset + note.length;
+    return newlines;
+  });
+  return { visible, noteLines };
+}
+
 /** Blank out `<!-- ... -->` notes while preserving line numbers. */
 export function stripNotes(text: string): string {
-  return text.replace(/<!--[\s\S]*?(-->|$)/g, (m) => m.replace(/[^\n]/g, ''));
+  return removeNotes(text).visible;
 }
 
 export function parse(text: string): ScreenplayDoc {
-  const lines = stripNotes(text).split(/\r?\n/);
+  const { visible, noteLines } = removeNotes(text);
+  const lines = visible.split(/\r?\n/);
   const frontmatter: Frontmatter = {};
   const elements: Element[] = [];
 
   let i = 0;
-  if (lines[0]?.trim() === '---') {
+  while (noteLines.has(i) && lines[i].trim() === '') i++;
+  if (lines[i]?.trim() === '---') {
     let end = -1;
-    for (let j = 1; j < lines.length; j++) {
+    for (let j = i + 1; j < lines.length; j++) {
       if (lines[j].trim() === '---') {
         end = j;
         break;
       }
     }
     if (end > 0) {
-      for (let j = 1; j < end; j++) {
+      for (let j = i + 1; j < end; j++) {
         const m = lines[j].match(/^\s*([A-Za-z][\w ]*?)\s*:\s*(.*)$/);
         if (m) frontmatter[m[1].toLowerCase()] = m[2].trim();
       }
@@ -57,6 +76,7 @@ export function parse(text: string): ScreenplayDoc {
     const t = lines[i].trim();
 
     if (t === '') {
+      if (noteLines.has(i)) continue;
       dialogue = null;
       flushAction();
       continue;
