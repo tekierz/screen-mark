@@ -4,7 +4,7 @@
   "scopeName": "text.screenmark",
   "patterns": [
     {
-      "include": "#frontmatter"
+      "include": "#document-start"
     },
     {
       "include": "#comment"
@@ -35,37 +35,48 @@
     },
     {
       "include": "#pagebreak"
+    },
+    {
+      "include": "#action"
     }
   ],
   "repository": {
     "frontmatter": {
-      "begin": "\\A[ \\t]*---\\s*$",
-      "end": "^[ \\t]*---\\s*$",
+      "begin": "(?:^|(?<=-->))[ \\t]*(---)(?=(?:[ \\t]|<!--(?:(?!-->).)*-->)*(?:<!--(?:(?!-->).)*)?$)",
+      "end": "(?:^|(?<=-->))[ \\t]*(---)(?=(?:[ \\t]|<!--(?:(?!-->).)*-->)*(?:<!--(?:(?!-->).)*)?$)",
       "name": "meta.embedded.block.frontmatter.screenmark",
       "beginCaptures": {
-        "0": {
+        "1": {
           "name": "punctuation.definition.tag.screenmark"
         }
       },
       "endCaptures": {
-        "0": {
+        "1": {
           "name": "punctuation.definition.tag.screenmark"
         }
       },
       "patterns": [
         {
-          "match": "^\\s*([A-Za-z][\\w ]*?)\\s*(:)\\s*(.*)$",
-          "captures": {
+          "include": "#comment"
+        },
+        {
+          "begin": "(?:^|(?<=-->))[ \\t]*([A-Za-z][\\w ]*?)[ \\t]*(:)",
+          "end": "(?=<!--)|$",
+          "applyEndPatternLast": true,
+          "contentName": "string.unquoted.screenmark",
+          "beginCaptures": {
             "1": {
               "name": "entity.name.tag.screenmark"
             },
             "2": {
               "name": "punctuation.separator.key-value.screenmark"
-            },
-            "3": {
-              "name": "string.unquoted.screenmark"
             }
-          }
+          },
+          "patterns": [
+            {
+              "include": "#inline-comment"
+            }
+          ]
         }
       ]
     },
@@ -75,119 +86,212 @@
       "name": "comment.block.html.screenmark"
     },
     "scene": {
-      "match": "^[ \\t]*(##)\\s+(.*?)(?:\\s+(#[^#\\s][^#]*?#))?\\s*$",
+      "begin": "(?:^|(?<=-->))[ \\t]*(##(?=[ \\t]))",
+      "end": "(?=<!--)|$",
+      "applyEndPatternLast": true,
       "name": "markup.heading.scene.screenmark",
-      "captures": {
+      "contentName": "entity.name.function.scene-heading.screenmark",
+      "beginCaptures": {
         "1": {
           "name": "punctuation.definition.heading.screenmark"
-        },
-        "2": {
-          "name": "entity.name.function.scene-heading.screenmark"
-        },
-        "3": {
-          "name": "constant.numeric.scene-number.screenmark"
         }
-      }
+      },
+      "patterns": [
+        {
+          "include": "#inline-comment"
+        },
+        {
+          "begin": "[ \\t]+((?:<!--(?:(?!-->).)*-->[ \\t]*)*)(#)(?=[^#\\s])(?=(?:<!--(?:(?!-->).)*-->|(?!<!--)[^#])*#(?:[ \\t]|<!--(?:(?!-->).)*-->)*(?:<!--(?:(?!-->).)*)?$)",
+          "end": "(#)|(?=<!--)|$",
+          "applyEndPatternLast": true,
+          "name": "constant.numeric.scene-number.screenmark",
+          "patterns": [
+            {
+              "include": "#inline-comment"
+            }
+          ],
+          "beginCaptures": {
+            "1": {
+              "patterns": [
+                {
+                  "include": "#inline-comment"
+                }
+              ]
+            }
+          }
+        }
+      ]
     },
     "section": {
-      "match": "^[ \\t]*(#{1,6})\\s+(.*)$",
+      "begin": "(?:^|(?<=-->))[ \\t]*(#{1,6}(?=[ \\t]))",
+      "end": "(?=<!--)|$",
+      "applyEndPatternLast": true,
       "name": "markup.heading.section.screenmark",
-      "captures": {
+      "contentName": "keyword.control.section.screenmark",
+      "beginCaptures": {
         "1": {
           "name": "punctuation.definition.heading.screenmark"
-        },
-        "2": {
-          "name": "keyword.control.section.screenmark"
         }
-      }
+      },
+      "patterns": [
+        {
+          "include": "#inline-comment"
+        }
+      ]
     },
     "character": {
-      "match": "^[ \\t]*(\\*\\*)([^*]+)(\\*\\*)\\s*(\\^)?$",
+      "begin": "(?:^|(?<=-->))[ \\t]*(\\*\\*)(?=(?:<!--(?:(?!-->).)*-->|(?!<!--)[^*])+\\*\\*(?:[ \\t]|<!--(?:(?!-->).)*-->)*(?:\\^)?(?:[ \\t]|<!--(?:(?!-->).)*-->)*(?:<!--(?:(?!-->).)*)?$)",
+      "end": "(?=<!--)|$",
+      "applyEndPatternLast": true,
       "name": "markup.bold.character.screenmark",
-      "captures": {
+      "contentName": "entity.name.class.character.screenmark",
+      "beginCaptures": {
         "1": {
           "name": "punctuation.definition.bold.screenmark"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#inline-comment"
         },
-        "2": {
-          "name": "entity.name.class.character.screenmark"
-        },
-        "3": {
+        {
+          "match": "\\*\\*",
           "name": "punctuation.definition.bold.screenmark"
         },
-        "4": {
+        {
+          "match": "\\^",
           "name": "keyword.operator.dual-dialog.screenmark"
         }
-      }
+      ]
     },
     "parenthetical": {
-      "match": "^[ \\t]*(_\\()(.*)(\\)_)\\s*$",
+      "begin": "(?:^|(?<=-->))[ \\t]*(_\\()(?=(?:<!--(?:(?!-->).)*-->|(?!<!--).)*\\)_(?:[ \\t]|<!--(?:(?!-->).)*-->)*(?:<!--(?:(?!-->).)*)?$)",
+      "end": "(?=<!--)|$",
+      "applyEndPatternLast": true,
       "name": "markup.italic.parenthetical.screenmark",
-      "captures": {
+      "contentName": "support.constant.parenthetical.screenmark",
+      "beginCaptures": {
         "1": {
           "name": "punctuation.definition.italic.screenmark"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#inline-comment"
         },
-        "2": {
-          "name": "support.constant.parenthetical.screenmark"
-        },
-        "3": {
+        {
+          "match": "\\)_",
           "name": "punctuation.definition.italic.screenmark"
         }
-      }
+      ]
     },
     "centered": {
-      "match": "^[ \\t]*(>)\\s?(.*?)\\s?(<)\\s*$",
+      "begin": "(?:^|(?<=-->))[ \\t]*(>)(?=(?:<!--(?:(?!-->).)*-->|(?!<!--).)*<(?:[ \\t]|<!--(?:(?!-->).)*-->)*(?:<!--(?:(?!-->).)*)?$)",
+      "end": "(?=<!--)|$",
+      "applyEndPatternLast": true,
       "name": "markup.quote.centered.screenmark",
-      "captures": {
+      "contentName": "string.other.centered.screenmark",
+      "beginCaptures": {
         "1": {
           "name": "punctuation.definition.quote.screenmark"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#inline-comment"
         },
-        "2": {
-          "name": "string.other.centered.screenmark"
-        },
-        "3": {
+        {
+          "match": "<(?=(?:[ \\t]|<!--(?:(?!-->).)*-->)*(?:<!--(?:(?!-->).)*)?$)",
           "name": "punctuation.definition.quote.screenmark"
         }
-      }
+      ]
     },
     "dialog": {
-      "match": "^[ \\t]*(>)\\s?(.*)$",
+      "begin": "(?:^|(?<=-->))[ \\t]*(>)",
+      "end": "(?=<!--)|$",
+      "applyEndPatternLast": true,
       "name": "markup.quote.dialog.screenmark",
-      "captures": {
+      "contentName": "string.quoted.dialog.screenmark",
+      "beginCaptures": {
         "1": {
           "name": "punctuation.definition.quote.screenmark"
-        },
-        "2": {
-          "name": "string.quoted.dialog.screenmark"
         }
-      }
+      },
+      "patterns": [
+        {
+          "include": "#inline-comment"
+        }
+      ]
     },
     "lyric": {
-      "match": "^[ \\t]*(~)\\s?(.*)$",
+      "begin": "(?:^|(?<=-->))[ \\t]*(~)",
+      "end": "(?=<!--)|$",
+      "applyEndPatternLast": true,
       "name": "markup.italic.lyric.screenmark",
-      "captures": {
+      "contentName": "string.quoted.lyric.screenmark",
+      "beginCaptures": {
         "1": {
           "name": "punctuation.definition.italic.screenmark"
-        },
-        "2": {
-          "name": "string.quoted.lyric.screenmark"
         }
-      }
+      },
+      "patterns": [
+        {
+          "include": "#inline-comment"
+        }
+      ]
     },
     "transition": {
-      "match": "^[ \\t]*(@)\\s?(.*)$",
+      "begin": "(?:^|(?<=-->))[ \\t]*(@)",
+      "end": "(?=<!--)|$",
+      "applyEndPatternLast": true,
       "name": "keyword.control.transition.screenmark",
-      "captures": {
+      "contentName": "keyword.control.transition.text.screenmark",
+      "beginCaptures": {
         "1": {
           "name": "punctuation.definition.keyword.screenmark"
-        },
-        "2": {
-          "name": "keyword.control.transition.text.screenmark"
         }
-      }
+      },
+      "patterns": [
+        {
+          "include": "#inline-comment"
+        }
+      ]
     },
     "pagebreak": {
-      "match": "^[ \\t]*-{3,}\\s*$",
+      "match": "(?:^|(?<=-->))[ \\t]*-{3,}(?=(?:[ \\t]|<!--(?:(?!-->).)*-->)*(?:<!--(?:(?!-->).)*)?$)",
       "name": "meta.separator.pagebreak.screenmark"
+    },
+    "document-start": {
+      "comment": "Only leading comment-only lines may precede frontmatter. An authored blank or the first closing fence ends this initial state.",
+      "begin": "\\A(?=[ \\t]*(?:<!--|---(?=(?:[ \\t]|<!--(?:(?!-->).)*-->)*(?:<!--(?:(?!-->).)*)?$)))",
+      "end": "(?<=---)|(?=[ \\t]*(?!<!--|---(?=(?:[ \\t]|<!--(?:(?!-->).)*-->)*(?:<!--(?:(?!-->).)*)?$))\\S)|^[ \\t]*$",
+      "patterns": [
+        {
+          "match": "[ \\t]+(?=<!--)"
+        },
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#frontmatter"
+        }
+      ]
+    },
+    "inline-comment": {
+      "comment": "Keep closed same-line notes nested; unmatched openers end line scopes so the root comment owns multiline state.",
+      "match": "<!--(?:(?!-->).)*-->",
+      "name": "comment.block.html.screenmark"
+    },
+    "action": {
+      "comment": "Keep inline notes inside plain action so a marker after a same-line note cannot become a new structural prefix.",
+      "begin": "(?:^|(?<=-->))[ \\t]*(?!<!--)\\S",
+      "end": "(?=<!--)|$",
+      "applyEndPatternLast": true,
+      "patterns": [
+        {
+          "include": "#inline-comment"
+        }
+      ]
     }
   }
 }
