@@ -107,3 +107,43 @@ test('tags in an unclosed note still collect', () => {
   const bd = buildBreakdown('## INT. LAB - DAY\n\nHi.\n\n<!-- @prop: beaker');
   assert.deepEqual(bd.scenes[0].tags, { prop: ['beaker'] });
 });
+
+test('prototype-named tags remain ordinary own categories', () => {
+  const bd = buildBreakdown('## INT. LAB - DAY\n\nHi.\n\n<!-- @constructor: crane @toString: slate -->');
+  assert.deepEqual(bd.scenes[0].tags.constructor, ['crane']);
+  assert.deepEqual(bd.scenes[0].tags.tostring, ['slate']);
+  assert.equal(Object.getPrototypeOf(bd.scenes[0].tags), Object.prototype);
+});
+
+test('seven occupied rows round upward to two eighths', () => {
+  const bd = buildBreakdown('## INT. LAB - DAY\n\none\ntwo\nthree\nfour\nfive');
+  assert.equal(bd.scenes[0].eighths, 2);
+});
+
+test('Markdown reports escape delimiter-rich cells and explain speaking cast', () => {
+  const bd = buildBreakdown('## INT. LAB | WEST - DAY #A|B#\n\n**MAYA | JANE**\n> hi\n\n<!-- @prop: pipe|wrench, C:\\kit -->');
+  for (const md of [breakdownToMarkdown(bd, 'Test'), scheduleToMarkdown(buildSchedule(bd), 'Test', 5)]) {
+    assert.match(md, /Speaking cast/);
+    assert.match(md, /LAB \\\| WEST/);
+    assert.match(md, /C:\\\\kit/);
+    assert.match(md, /physical PDF page count/);
+  }
+});
+
+test('54 occupied rows are eight eighths and explicit breaks do not charge unused tails', () => {
+  const full = '## INT. LAB - DAY\n\n' + Array.from({ length: 52 }, (_, i) => `Beat ${i}.`).join('\n');
+  const short = '## INT. YARD - NIGHT\n\nA beat.';
+  assert.equal(buildBreakdown(full).scenes[0].eighths, 8);
+  const bd = buildBreakdown(`Preface.\n\n---\n\n${short}\n\n---\n\n${short}`);
+  assert.deepEqual(bd.scenes.map(scene => scene.eighths), [1, 1]);
+  assert.equal(bd.totalEighths, 2);
+  assert.equal(buildSchedule(bd).reduce((sum, day) => sum + day.eighths, 0), 2);
+});
+
+test('interscene spacing belongs to the following scene and per-scene rounding is conservative', () => {
+  const scene = (i: number) => `## INT. ROOM ${i} - DAY\n\none\ntwo\nthree\nfour`;
+  // First scene: six rows. Second: two interscene blanks plus six rows.
+  assert.deepEqual(buildBreakdown(`${scene(1)}\n\n${scene(2)}`).scenes.map(s => s.eighths), [1, 2]);
+  const many = buildBreakdown(Array.from({length: 30}, (_, i) => `## INT. ROOM ${i} - DAY\n\nHi.`).join('\n\n'));
+  assert.equal(many.totalEighths, 30);
+});

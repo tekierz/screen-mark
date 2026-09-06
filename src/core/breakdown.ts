@@ -1,6 +1,7 @@
 import { SceneHeading } from './ast';
 import { parse } from './parser';
-import { layout } from './pdf';
+import { layout, paginate, LINES_PER_PAGE } from './pdf';
+import { escapeMarkdownCell } from './markdown';
 
 export interface SceneBreakdown {
   /** Stable scene ID from `#4A#`, if assigned. */
@@ -10,7 +11,7 @@ export interface SceneBreakdown {
   location: string;
   timeOfDay: string;
   characters: string[];
-  /** Scene length in eighths of a page (industry scheduling unit), minimum 1. */
+  /** Conservative retained-row estimate, rounded up per scene to eighths, minimum 1. */
   eighths: number;
   /** Production elements tagged in notes, e.g. { prop: ['revolver'], vfx: [...] }. */
   tags: Record<string, string[]>;
@@ -25,8 +26,7 @@ export interface Breakdown {
 }
 
 const SLUG_RE = /^(INT\.?\/EXT\.?|I\/E|INT|EXT|EST)[.\s]+(.*)$/i;
-// Same page geometry as pdf.ts: 54 lines per page.
-const LINES_PER_EIGHTH = 54 / 8;
+const LINES_PER_EIGHTH = LINES_PER_PAGE / 8;
 
 export function formatEighths(eighths: number): string {
   const whole = Math.floor(eighths / 8);
@@ -68,7 +68,10 @@ function collectTags(text: string, scenes: SceneBreakdown[]): void {
         .split(',')
         .map((s) => s.replace(/\s+/g, ' ').trim())
         .filter(Boolean);
-      if (items.length) (scene.tags[category] ??= []).push(...items);
+      if (items.length) {
+        if (!Object.prototype.hasOwnProperty.call(scene.tags, category)) scene.tags[category] = [];
+        scene.tags[category].push(...items);
+      }
     }
   }
 }
@@ -78,6 +81,12 @@ export function buildBreakdown(text: string): Breakdown {
   const els = doc.elements;
   const sceneIdxs = els.flatMap((e, i) => (e.kind === 'scene' ? [i] : []));
   const scenes: SceneBreakdown[] = [];
+  const occupiedRows = new Map<number, number>();
+  for (const row of paginate(layout(doc)).flat()) {
+    if (row.sceneLine !== undefined) {
+      occupiedRows.set(row.sceneLine, (occupiedRows.get(row.sceneLine) ?? 0) + 1);
+    }
+  }
 
   for (let s = 0; s < sceneIdxs.length; s++) {
     const start = sceneIdxs[s];
@@ -92,15 +101,15 @@ export function buildBreakdown(text: string): Breakdown {
       if (name && !characters.includes(name)) characters.push(name);
     }
 
-    // Reuse the PDF layout so eighths match the printed page exactly.
-    const lineCount = layout({ frontmatter: {}, elements: slice }).length;
+    // Count retained rows from the complete pagination, excluding unused page tails.
+    const lineCount = occupiedRows.get(heading.line) ?? 0;
 
     scenes.push({
       number: heading.number,
       slug: heading.text.toUpperCase(),
       ...parseSlug(heading.text),
       characters,
-      eighths: Math.max(1, Math.round(lineCount / LINES_PER_EIGHTH)),
+      eighths: Math.max(1, Math.ceil(lineCount / LINES_PER_EIGHTH)),
       tags: {},
       line: heading.line,
     });
@@ -133,18 +142,20 @@ export function breakdownToMarkdown(bd: Breakdown, title: string): string {
   const out: string[] = [
     `# Scene Breakdown — ${title}`,
     '',
-    `Total: ${bd.scenes.length} scenes, ${formatEighths(bd.totalEighths)} pgs`,
+    `Total: ${bd.scenes.length} scenes, ${formatEighths(bd.totalEighths)} estimated pgs`,
     '',
-    '| # | Slug | I/E | Location | Time | Pages | Cast | Elements |',
+    'Scene estimates round retained PDF body rows up to eighths per scene; their sum may exceed the physical PDF page count. Speaking cast includes dialogue cues only; silent performers are not inferred.',
+    '',
+    '| # | Slug | I/E | Location | Time | Estimated pages | Speaking cast | Elements |',
     '|---|------|-----|----------|------|-------|------|----------|',
   ];
   for (const s of bd.scenes) {
     out.push(
-      `| ${s.number ?? ''} | ${s.slug} | ${s.intExt} | ${s.location} | ${s.timeOfDay} | ${formatEighths(s.eighths)} | ${s.characters.join(', ')} | ${flatTags(s.tags)} |`
+      `| ${[s.number ?? '', s.slug, s.intExt, s.location, s.timeOfDay, formatEighths(s.eighths), s.characters.join(', '), flatTags(s.tags)].map(escapeMarkdownCell).join(' | ')} |`
     );
   }
 
-  out.push('', '## Cast', '');
+  out.push('', '## Speaking cast', '');
   for (const name of bd.characters) {
     const appears = bd.scenes.filter((s) => s.characters.includes(name));
     const nums = appears.map((s) => s.number ?? `@${s.line + 1}`).join(', ');

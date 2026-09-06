@@ -1,3 +1,4 @@
+import { escapeMarkdownCell } from './markdown';
 import { Breakdown, SceneBreakdown, formatEighths } from './breakdown';
 
 export interface ShootDay {
@@ -41,17 +42,19 @@ export function scheduleToMarkdown(days: ShootDay[], title: string, pagesPerDay:
     `# Shooting Schedule — ${title}`,
     '',
     `${days.reduce((n, d) => n + d.scenes.length, 0)} scenes over ${days.length} day${days.length === 1 ? '' : 's'} (target ${pagesPerDay} pages/day). Scenes grouped by location, day work before night.`,
+    '',
+    'Estimates round retained PDF body rows up to eighths per scene; their sum may exceed the physical PDF page count. Speaking cast includes dialogue cues only; silent performers are not inferred. Location and exact day/night ordering is a draft scheduling heuristic.',
   ];
   days.forEach((day, i) => {
     out.push('', `## Day ${i + 1} — ${formatEighths(day.eighths)} pgs`, '');
-    out.push('| # | Slug | I/E | Time | Pages | Cast | Elements |');
+    out.push('| # | Slug | I/E | Time | Estimated pages | Speaking cast | Elements |');
     out.push('|---|------|-----|------|-------|------|----------|');
     for (const s of day.scenes) {
       const tags = Object.entries(s.tags)
         .map(([cat, items]) => `${cat}: ${items.join(', ')}`)
         .join('; ');
       out.push(
-        `| ${s.number ?? ''} | ${s.slug} | ${s.intExt} | ${s.timeOfDay} | ${formatEighths(s.eighths)} | ${s.characters.join(', ')} | ${tags} |`
+        `| ${[s.number ?? '', s.slug, s.intExt, s.timeOfDay, formatEighths(s.eighths), s.characters.join(', '), tags].map(escapeMarkdownCell).join(' | ')} |`
       );
     }
   });
