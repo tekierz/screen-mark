@@ -1,0 +1,265 @@
+$ bun scripts/release.ts
+bun install v1.3.11 (af24e281)
+
+Checked 354 installs across 379 packages (no changes) [130.00ms]
+$ bun run typecheck && bun run test && bun run build
+$ tsc --noEmit
+$ bun test ./test/*.test.ts
+bun test v1.3.11 (af24e281)
+
+test/authoring.test.ts:
+(pass) notes preserve the complete screenplay across preview, exports and planning [5.27ms]
+
+test/breakdown.test.ts:
+(pass) breakdown extracts slug parts, cast, numbers, tags [0.28ms]
+(pass) tags before the first scene are ignored [0.04ms]
+(pass) non-standard slug falls back to OTHER [0.02ms]
+(pass) formatEighths
+(pass) reports render and CSV escapes commas [0.39ms]
+(pass) schedule groups by location with night last and packs by pages [0.33ms]
+(pass) a scene larger than a day still gets scheduled alone [0.28ms]
+(pass) CSV defuses formula-like cells [0.08ms]
+(pass) tags in an unclosed note still collect [0.03ms]
+(pass) prototype-named tags remain ordinary own categories
+(pass) seven occupied rows round upward to two eighths [0.13ms]
+(pass) Markdown reports escape delimiter-rich cells and explain speaking cast [0.04ms]
+(pass) 54 occupied rows are eight eighths and explicit breaks do not charge unused tails [0.30ms]
+(pass) interscene spacing belongs to the following scene and per-scene rounding is conservative [0.15ms]
+
+test/budget.test.ts:
+(pass) parseBudget sums sections and grand totals [0.79ms]
+(pass) upsertTotals appends then replaces in place [10.44ms]
+(pass) totals section stays put when other sections follow it [0.68ms]
+(pass) template parses cleanly with zero totals [0.14ms]
+(pass) variance directions [0.52ms]
+(pass) user notes below the Totals table survive regeneration [0.45ms]
+(pass) h3 subsection between Totals and next h2 survives [0.58ms]
+(pass) legacy Totals block without end sentinel is bounded by the table, not the next h2 [0.31ms]
+(pass) upsertTotals is exactly idempotent [0.55ms]
+(pass) invalid nonempty amounts fail with source location [0.50ms]
+(pass) valid amounts retain decimal dollars and exact cent equality [0.71ms]
+(pass) sum and variance overflow are rejected [0.21ms]
+(pass) unowned Totals headings and source tables remain untouched and contribute [0.42ms]
+(pass) multiple owned blocks refresh in place without losing intervening bytes [0.62ms]
+(pass) distant sentinels and adjacent tables cannot expand generated ownership [0.62ms]
+(pass) legacy block without Total row stops before an adjacent table header [0.24ms]
+(pass) malformed owned regions fail before replacement [0.13ms]
+(pass) escaped pipes and odd/even backslash runs retain correct columns [0.10ms]
+(pass) data row width is validated and table headers reset after prose [0.06ms]
+(pass) CRLF refreshes and appends preserve all untouched bytes [0.75ms]
+(pass) section names are escaped in generated Markdown cells [0.35ms]
+(pass) a section named like the final Total row cannot truncate generated ownership [0.49ms]
+(pass) large decimal amounts must survive both directions of the public cent round-trip [0.06ms]
+(pass) empty marked tables are rejected as ambiguous generated blocks [0.05ms]
+
+test/editor.test.ts:
+(pass) outline nests sections by depth and scenes under their innermost section [135.22ms]
+(pass) outline handles missing ancestors, maximum depth and single-line blocks [2.71ms]
+(pass) numbering uses parsed scenes and original UTF-16 offsets outside comments [8.59ms]
+(pass) completion replaces existing closing stars and filters on markers [3.43ms]
+(pass) preview pending edit cannot switch back to previous document [709.77ms]
+(pass) preview renders revised speech as dialogue after inserting a hidden note [360.05ms]
+(pass) budget destination follows active root and only FileNotFound creates [8.57ms]
+(pass) ambiguous folder cancellation creates nothing [6.08ms]
+(pass) invalid budget input reports error without edits [5.88ms]
+(pass) failed workspace edit is reported [4.71ms]
+(pass) PDF and Fountain validation reject before writes [5.94ms]
+(pass) failed external PDF opening is reported [13.09ms]
+(pass) disposing preview cancels pending renders [354.38ms]
+(pass) scene and transition completions include their trigger in filter text [3.62ms]
+(pass) budget destination uses sole folder or explicit folder picker selection [6.15ms]
+
+test/fountain.test.ts:
+(pass) title page mapping [0.14ms]
+(pass) standard slugline passes through, non-standard is dot-forced [0.02ms]
+(pass) scene number is preserved [0.05ms]
+(pass) lowercase character cue is @-forced, dual gets caret [0.07ms]
+(pass) dialogue parts serialize in order [0.04ms]
+(pass) all-caps action line is guarded with ! [0.03ms]
+(pass) transitions: standard stays plain, custom is >-forced [0.04ms]
+(pass) centered, section, pagebreak [0.03ms]
+(pass) only the first line of a multi-line all-caps action is guarded [0.01ms]
+(pass) independent import retains forced action and numeric/non-Roman cues [0.43ms]
+(pass) independent import preserves literal inline markers and boneyard text [0.04ms]
+(pass) independent import retains genuine structural and dialogue tokens [0.30ms]
+(pass) unrepresentable control collisions report source locations [0.27ms]
+(pass) independent visible text survives escaped dialogue markers and title metadata [0.13ms]
+(pass) literal note delimiters spanning dialogue parts fail before import can hide speech [0.04ms]
+(pass) unmatched note brackets in separate tokens remain visible [0.03ms]
+(pass) independent import keeps ambiguous transitions and bare scene prefixes in their intended types [0.19ms]
+
+test/grammar.test.ts:
+(pass) actual TextMate scopes preserve inline notes and markers: entity.name.function.scene-heading.screenmark [18.87ms]
+(pass) actual TextMate scopes preserve inline notes and markers: keyword.control.section.screenmark [0.34ms]
+(pass) actual TextMate scopes preserve inline notes and markers: entity.name.class.character.screenmark [0.53ms]
+(pass) actual TextMate scopes preserve inline notes and markers: support.constant.parenthetical.screenmark [0.21ms]
+(pass) actual TextMate scopes preserve inline notes and markers: string.other.centered.screenmark [0.14ms]
+(pass) actual TextMate scopes preserve inline notes and markers: string.quoted.dialog.screenmark [0.08ms]
+(pass) actual TextMate scopes preserve inline notes and markers: string.quoted.lyric.screenmark [0.13ms]
+(pass) actual TextMate scopes preserve inline notes and markers: keyword.control.transition.text.screenmark [0.13ms]
+(pass) scene IDs, closing cue markers, dual operators and centered markers survive notes [0.24ms]
+(pass) multiple, empty, nested-looking and marker-rich notes remain comment tokens [0.28ms]
+(pass) multiline notes release structural scopes before resuming visible content [0.84ms]
+(pass) unclosed notes persist through EOF under LF and CRLF [0.17ms]
+(pass) frontmatter values tokenize inline and multiline notes and recover after closing fence [0.33ms]
+(pass) an authored leading blank prevents frontmatter highlighting [0.12ms]
+(pass) indented comment-only lines retain comment state and optional opening frontmatter [0.22ms]
+(pass) notes inside action do not turn their following text into a structural prefix [0.30ms]
+(pass) visible suffix text keeps invalid cue and parenthetical forms as action [0.14ms]
+(pass) a trailing unclosed note does not hide already complete visible markers [0.11ms]
+(pass) frontmatter fences accept hidden tails and reject visible suffixes [0.23ms]
+(pass) opening frontmatter state ends permanently at its first closing fence [0.10ms]
+(pass) structural lookaheads stop notes at their first closer without hiding visible suffixes [0.10ms]
+(pass) a comment before a scene ID retains its visible whitespace boundary [0.17ms]
+(pass) a commented closing fence still permanently ends opening frontmatter state [0.17ms]
+
+test/parser.test.ts:
+(pass) frontmatter is parsed and lowercased [0.06ms]
+(pass) scene heading with and without number [0.06ms]
+(pass) sections at depth 1 and 3; depth 2 is always a scene [0.04ms]
+(pass) dialogue block with parenthetical, lines, and lyric [0.05ms]
+(pass) dual dialog marker [0.02ms]
+(pass) blank line ends a dialog block [0.02ms]
+(pass) parenthetical outside dialog falls back to action [0.01ms]
+(pass) centered vs dialog disambiguation [0.02ms]
+(pass) transition, pagebreak, standalone lyric [0.05ms]
+(pass) consecutive action lines merge; blank splits paragraphs [0.02ms]
+(pass) notes are stripped but line numbers preserved [0.04ms]
+(pass) pagebreak dashes are not confused with frontmatter [0.02ms]
+(pass) comment-only lines retain speech, parentheticals and lyrics in one dialogue [0.09ms]
+(pass) authored blank lines before or after notes still terminate dialogue [0.05ms]
+(pass) notes merge action paragraphs while real blank lines still split them [0.03ms]
+(pass) inline notes concatenate visible text but preserve physical line breaks [0.04ms]
+(pass) leading notes and notes inside frontmatter are invisible [0.05ms]
+(pass) a genuine leading blank still prevents frontmatter after notes
+(pass) unclosed notes hide the rest of the file without losing preceding content [0.04ms]
+(pass) nested-looking notes retain first-closing-delimiter behavior [0.07ms]
+(pass) stripNotes preserves its existing string output for inline, CRLF and unclosed notes [0.01ms]
+
+test/pdf.test.ts:
+(pass) wrap respects width and hard-splits long words [0.03ms]
+(pass) sample screenplay renders to a multi-page PDF [8.36ms]
+(pass) scene numbers and dual dialog do not crash the layout [2.20ms]
+(pass) long speech splits with (MORE) / (CONT'D) [0.42ms]
+(pass) dual dialogue block near page bottom moves whole to next page [0.14ms]
+(pass) sections cannot erase explicit page breaks [0.06ms]
+(pass) exact 50-row filler leaves short dialogue intact on the next page [0.21ms]
+(pass) scene heading stays with dialogue cue and speech transitively [0.17ms]
+(pass) every text span stays inside its assigned body or scene-number gutter [0.14ms]
+(pass) oversized dual dialogue repeats cues and retains all speech exactly once [2.03ms]
+(pass) unsupported rendered glyphs and empty printable scripts reject exports [2.54ms]
+(pass) oversized title metadata is rejected rather than clipped [0.16ms]
+(pass) a scene plus page-sized dialogue splits their oversized combined keep group [0.80ms]
+(pass) wrapped continuation cues count against capacity and retain source scene ownership [1.94ms]
+(pass) long dialogue starts with spoken text before MORE when a parenthetical leads it [0.30ms]
+(pass) trailing parentheticals share their continuation page with retained speech [0.49ms]
+(pass) dual continuation boundaries retain speech for every continuing column [1.46ms]
+(pass) impossible parenthetical runs reject instead of creating speechless continuations [0.31ms]
+(pass) pending scenes follow their parenthetical and first spoken row onto the next page [0.35ms]
+
+ 134 pass
+ 0 fail
+Ran 134 tests across 8 files. [1.90s]
+$ bun esbuild.js
+built dist/extension.js with PDFKit runtime data and notices
+$ bun scripts/generate-samples.ts
+Regenerated samples/coffee PDF, Fountain, breakdown and schedule
+PDF extraction passed: 205 speech tokens and supported glyphs. Rendered inspection files: /var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-pdf-sjvm9i
+$ bun scripts/editor-smoke.ts
+[main 2026-09-06T04:21:50.608Z] update#setState disabled
+[main 2026-09-06T04:21:50.611Z] update#ctor - updates are disabled by the environment
+Via 'product.json#extensionEnabledApiProposals' extension 'ms-vsliveshare.vsliveshare' wants API proposal 'notebookCellExecutionState' but that proposal DOES NOT EXIST. Likely, the proposal has been finalized (check 'vscode.d.ts') or was abandoned.
+Via 'product.json#extensionEnabledApiProposals' extension 'ms-python.gather' wants API proposal 'notebookCellExecutionState' but that proposal DOES NOT EXIST. Likely, the proposal has been finalized (check 'vscode.d.ts') or was abandoned.
+Via 'product.json#extensionEnabledApiProposals' extension 'ms-python.vscode-pylance' wants API proposal 'mcpConfigurationProvider' but that proposal DOES NOT EXIST. Likely, the proposal has been finalized (check 'vscode.d.ts') or was abandoned.
+ChatSessionStore: Migrating 0 chat sessions from storage service to file system
+Started local extension host with pid 65958.
+Started initializing default profile extensions in extensions installation folder. file:///var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-host-oYNn24/extensions
+ComputeTargetPlatform: darwin-arm64
+Completed initializing default profile extensions in extensions installation folder. file:///var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-host-oYNn24/extensions
+Loading development extension at /Users/tiki7/Desktop/Projects/screen-mark
+Settings Sync: Account status changed from uninitialized to unavailable
+(node:65958) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `Code Helper (Plugin) --trace-deprecation ...` to show where the warning was created)
+[main 2026-09-06T04:21:56.125Z] Extension host with pid 65958 exited with code: 0, signal: unknown.
+{
+  "editor": "1.101.1",
+  "extensionPath": "/Users/tiki7/Desktop/Projects/screen-mark",
+  "version": "0.3.2",
+  "checks": [
+    "UTF-16 comment numbering and idempotence",
+    "real auto-close typing and suggest acceptance",
+    "preview document switching",
+    "second-root budget and refresh",
+    "packaged PDF runtime",
+    "nested document-symbol hierarchy",
+    "short-screenplay typing and hidden-note revision",
+    "revised PDF extraction and Fountain export",
+    "scene breakdown CSV/Markdown and shooting schedule"
+  ]
+}
+Smoke profile and evidence: /var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-host-oYNn24
+ INFO  Files included in the VSIX:
+screen-mark-0.3.2.vsix
+├─ [Content_Types].xml
+├─ extension.vsixmanifest
+└─ extension/
+   ├─ LICENSE.txt [1.04 KB]
+   ├─ THIRD-PARTY-NOTICES.md [105.12 KB]
+   ├─ changelog.md [3.06 KB]
+   ├─ language-configuration.json [0.42 KB]
+   ├─ package.json [5.6 KB]
+   ├─ readme.md [6.22 KB]
+   ├─ dist/
+   │  ├─ extension.js [3.24 MB]
+   │  └─ data/ (15 files) [630.29 KB]
+   ├─ media/
+   │  ├─ activity-icon.svg [0.37 KB]
+   │  └─ icon.png [2.23 KB]
+   ├─ samples/
+   │  ├─ coffee.breakdown.csv [0.35 KB]
+   │  ├─ coffee.breakdown.md [0.91 KB]
+   │  ├─ coffee.fountain [1.11 KB]
+   │  ├─ coffee.pdf [3.4 KB]
+   │  ├─ coffee.schedule.md [0.84 KB]
+   │  └─ coffee.screen.md [1.39 KB]
+   ├─ snippets/
+   │  └─ screenmark.json [1.47 KB]
+   └─ syntaxes/
+      └─ screenmark.tmLanguage.json [8.26 KB]
+
+=> Run vsce ls --tree to see all included files.
+
+ DONE  Packaged: screen-mark-0.3.2.vsix (34 files, 728.3 KB)
+Installing extensions...
+Extension 'screen-mark-0.3.2.vsix' was successfully installed.
+[main 2026-09-06T04:21:58.346Z] update#setState disabled
+[main 2026-09-06T04:21:58.346Z] update#ctor - updates are disabled by the environment
+Via 'product.json#extensionEnabledApiProposals' extension 'ms-vsliveshare.vsliveshare' wants API proposal 'notebookCellExecutionState' but that proposal DOES NOT EXIST. Likely, the proposal has been finalized (check 'vscode.d.ts') or was abandoned.
+Via 'product.json#extensionEnabledApiProposals' extension 'ms-python.gather' wants API proposal 'notebookCellExecutionState' but that proposal DOES NOT EXIST. Likely, the proposal has been finalized (check 'vscode.d.ts') or was abandoned.
+Via 'product.json#extensionEnabledApiProposals' extension 'ms-python.vscode-pylance' wants API proposal 'mcpConfigurationProvider' but that proposal DOES NOT EXIST. Likely, the proposal has been finalized (check 'vscode.d.ts') or was abandoned.
+ChatSessionStore: Migrating 0 chat sessions from storage service to file system
+Started local extension host with pid 66201.
+ComputeTargetPlatform: darwin-arm64
+Loading development extension at /var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-host-DHBcEL/extensions/tikilabs.screen-mark-0.3.2
+Settings Sync: Account status changed from uninitialized to unavailable
+(node:66201) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `Code Helper (Plugin) --trace-deprecation ...` to show where the warning was created)
+[main 2026-09-06T04:22:03.515Z] Extension host with pid 66201 exited with code: 0, signal: unknown.
+{
+  "editor": "1.101.1",
+  "extensionPath": "/var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-host-DHBcEL/extensions/tikilabs.screen-mark-0.3.2",
+  "version": "0.3.2",
+  "checks": [
+    "UTF-16 comment numbering and idempotence",
+    "real auto-close typing and suggest acceptance",
+    "preview document switching",
+    "second-root budget and refresh",
+    "packaged PDF runtime",
+    "nested document-symbol hierarchy",
+    "short-screenplay typing and hidden-note revision",
+    "revised PDF extraction and Fountain export",
+    "scene breakdown CSV/Markdown and shooting schedule"
+  ]
+}
+Smoke profile and evidence: /var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-host-DHBcEL
+Verified local release: /Users/tiki7/Desktop/Projects/screen-mark/screen-mark-0.3.2.vsix (34 archive entries)

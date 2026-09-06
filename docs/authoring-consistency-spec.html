@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="data:,"><title>ScreenMark — authoring consistency specification</title><style>
+    :root { color-scheme: light; --ink:#182a35; --muted:#526873; --line:#d7dfda; --accent:#00695f; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:#f4f3ee; color:var(--ink); font:17px/1.65 system-ui,-apple-system,sans-serif; }
+    main { max-width:1100px; margin:auto; padding:54px 30px 80px; }
+    header { border-bottom:2px solid var(--ink); padding-bottom:28px; }
+    .eyebrow { color:var(--accent); text-transform:uppercase; letter-spacing:2px; font-size:12px; font-weight:750; }
+    h1 { font-size:clamp(34px,5vw,55px); line-height:1.12; letter-spacing:-1.7px; margin:18px 0; }
+    h2 { font-size:28px; line-height:1.25; letter-spacing:-.5px; margin:0 0 16px; }
+    h3 { font-size:19px; margin:22px 0 8px; }
+    p { margin:10px 0 16px; }
+    section { margin-top:40px; scroll-margin-top:24px; }
+    a { color:var(--accent); text-underline-offset:3px; }
+    nav { display:flex; gap:10px 20px; flex-wrap:wrap; margin-top:24px; font-size:14px; }
+    .lead { font-size:20px; max-width:880px; }
+    .note { border-left:4px solid var(--accent); background:#e5eee7; padding:18px 22px; border-radius:0 8px 8px 0; }
+    .status { display:inline-block; border-radius:5px; padding:3px 9px; background:#ffe8bb; color:#775000; font-size:12px; font-weight:750; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    .card { background:white; border:1px solid var(--line); border-radius:10px; padding:21px; }
+    .card h3 { margin-top:0; }
+    .table { overflow-x:auto; border:1px solid var(--line); border-radius:8px; background:white; }
+    table { width:100%; border-collapse:collapse; font-size:14px; text-align:left; }
+    th,td { padding:12px 14px; vertical-align:top; border-bottom:1px solid var(--line); }
+    th { background:#e6ede7; font-size:12px; text-transform:uppercase; letter-spacing:.5px; }
+    tr:last-child td { border-bottom:0; }
+    code { font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace; overflow-wrap:anywhere; }
+    ul,ol { padding-left:23px; }
+    li { margin:7px 0; }
+    .small { font-size:13px; color:var(--muted); }
+    .checklist { list-style:none; padding-left:0; }
+    .checklist li { padding-left:26px; position:relative; }
+    .checklist li::before { content:'□'; position:absolute; left:0; color:var(--accent); }
+    footer { border-top:1px solid var(--line); padding-top:20px; margin-top:45px; }
+    @media(max-width:700px) { main { padding:28px 18px 50px; } .grid { grid-template-columns:1fr; } h2 { font-size:25px; } .lead { font-size:18px; } }
+    @media print { body { background:white; font-size:11px; } main { padding:0; max-width:none; } h1 { font-size:32px; } h2 { font-size:21px; } section { margin-top:24px; } nav { display:none; } .card,tr,.note { break-inside:avoid; } table { font-size:10px; } }
+  </style></head><body><main>
+<header><div class="eyebrow">ScreenMark / next implementation specification</div><h1>Make notes invisible.<br>Make the outline match the script.</h1><p class="lead">Close the three remaining authoring gaps: comment-only separators, section hierarchy and inline comment highlighting. Verify the writing-to-production workflow after the fixes.</p><p><span class="status">Implemented — verified locally in 0.3.2</span></p><p class="small">The user approved this specification before source changes. Implementation and verification are complete. See the <a href="authoring-consistency-results.html">results and release evidence</a>.</p><nav><a href="#notes">Comment behavior</a><a href="#outline">Outline hierarchy</a><a href="#grammar">Highlighting</a><a href="#verification">Verification and delivery</a></nav></header>
+<section id="notes"><h2>1 · Comment-only lines do not separate dialogue</h2><p>A hidden note must not change the surrounding screenplay structure. Only an actual blank or whitespace-only line outside a comment ends a dialogue or action paragraph.</p><div class="grid"><div class="card"><h3>Retain dialogue through the note</h3><pre>**MAYA**
+&lt;!-- delivery note --&gt;
+&gt; Hello.</pre><p>One MAYA dialogue containing “Hello.” The note contributes no printed rows or orphan action.</p></div><div class="card"><h3>Keep intentional separation</h3><pre>**MAYA**
+&lt;!-- delivery note --&gt;
+
+&gt; Hello.</pre><p>The authored blank line still ends dialogue. The existing orphan-blockquote fallback remains intact.</p></div></div><ul>
+<li>Skip comment-only source lines without flushing a pending dialogue or action paragraph. This includes whitespace around notes, adjacent notes, and blank lines inside a multiline note.</li>
+<li>Preserve real blank separators before or after a note. Keep original zero-based source line numbers under LF and CRLF.</li>
+<li>Retain existing inline concatenation: <code>Before&lt;!-- note --&gt;after</code> becomes <code>Beforeafter</code>. Visible content on different physical lines keeps its newline.</li>
+<li>Keep existing first-closing-delimiter behavior for nested-looking notes. An unclosed comment continues to EOF.</li>
+<li>Action lines separated only by a note form one action paragraph. Parentheticals and lyrics after notes remain attached to the active dialogue.</li>
+<li>Skip leading comment-only lines when finding opening frontmatter. A genuine leading blank still prevents frontmatter recognition. Comments inside frontmatter remain invisible.</li>
+</ul><p><strong>Implementation boundary:</strong> retain comment-span line information while removing notes, then distinguish an emptied comment line from an authored separator. Keep the public <code>stripNotes(text): string</code> behavior compatible. The AST does not gain comment nodes, and scene numbering continues to use its own original UTF-16 offset mask.</p><p class="small">Primary files: src/core/parser.ts; test/parser.test.ts; related export/editor regressions; README.md.</p></section>
+<section id="outline"><h2>2 · Sections contain their subsections and scenes</h2><p>Build the document-symbol hierarchy using a small stack of section ancestors. A section attaches to the nearest preceding section with a shallower depth. A scene attaches to the current innermost section; scenes before any section remain at the root.</p><pre>Act One
+  Opening scene
+  Sequence A
+    Scene 1A
+    Deep Beat
+      Scene 2
+  Sequence B
+    Scene 3
+Act Two
+  Scene 4</pre><ul><li>A same-depth or shallower section closes the relevant ancestors. Skipped levels do not create synthetic headings.</li><li><code>##</code> remains reserved for scenes. Section nesting uses the parser’s existing depths 1 and 3–6.</li><li>Keep existing names, scene IDs, symbol kinds, selection ranges and block-end calculation. Folding already follows section depth; verify that symbol containment agrees with it.</li><li>Assert exact hierarchy and ranges for pre-section scenes, deep nesting, siblings, shallow resets, skipped depths and single-line blocks.</li></ul><p class="small">Primary files: src/features/symbols.ts; editor provider regressions; real extension-host smoke.</p></section>
+<section id="grammar"><h2>3 · Inline notes receive comment scopes</h2><p>The grammar must let <code>&lt;!-- … --&gt;</code> participate in tokenization within structural lines, rather than letting a whole-line match swallow the note.</p><ul><li>Cover scenes and scene IDs, sections, character cues including dual markers, parentheticals, centered text, dialogue, lyrics, transitions and frontmatter values. Preserve useful scopes for visible markers and content.</li><li>Test notes before, within and after content on representative structural lines. Include multiple notes, delimiter-like text inside notes, empty notes and indentation.</li><li>Test state across lines: multiline and unclosed comments stay comments; subsequent visible lines recover their normal scopes after closure. A note must not leave the following scene or dialogue trapped in the preceding structural scope.</li><li>Use the actual TextMate tokenizer with Oniguruma, carrying its rule stack across each fixture. Assertions check the scopes at relevant UTF-16 positions, not theme-specific colors or a second regex recognizer.</li></ul><p>Add exact-pinned development dependencies <code>vscode-textmate@9.3.2</code> and <code>vscode-oniguruma@2.0.1</code>, verified from their registry metadata during this check-in. The existing Bun test runner is sufficient. These dependencies are test-only and remain outside the extension bundle.</p><p class="small">Primary files: syntaxes/screenmark.tmLanguage.json; new test/grammar.test.ts; package.json; bun.lock. The <a href="https://github.com/microsoft/vscode-textmate">official TextMate library</a> documents the registry/tokenization API and <a href="https://github.com/microsoft/vscode-oniguruma">VS Code’s Oniguruma bindings</a> provide the regex engine. Use the editor’s <a href="https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide#scope-inspector">scope inspector</a> for a visual cross-check.</p></section>
+<section id="verification"><h2>Verification and delivery</h2><ol><li>Lock reproductions before each fix. Parser and outline owners can work independently; one owner handles grammar and its test dependencies.</li><li>Run focused tests, then the existing full verification command. Retain all budget, pagination, export and editor regression coverage.</li><li>Extend the isolated real-host fixture to query the actual document-symbol provider and exercise notes inserted between cues and speech. Verify preview/export content and numbering source positions.</li><li>Use a complete short-screenplay fixture for writing, revision, numbering, PDF/Fountain export and production reports. Record any observed friction separately from the required fixes; the fixture is workflow evidence, not a claim of user testing.</li><li>Build a fresh local 0.3.2 candidate through the existing Bun release command, with coherent README/changelog/version metadata and installed-artifact smoke. Preserve the verified 0.3.1 artifact and historical report.</li><li>Record results and any remaining limits in <code>docs/authoring-consistency-results.html</code>. Obtain independent review before calling the work complete.</li></ol><p><strong>Elegance check:</strong> reuse the existing parser, symbol ranges, Bun test runner and host launcher. This needs comment-line provenance, a local ancestor stack and grammar rules with token tests; it does not need a second parser or a new editor service.</p><p class="small">The scope is this authoring pass and its local verification. No Git commits, publication or deployment are included in implementation; the earlier commit request covered the completed remediation series.</p></section>
+<footer class="small">Prepared from the current parser, symbol provider, grammar, existing test harness and two independent read-only reviews. Source implementation is underway.</footer></main></body></html>

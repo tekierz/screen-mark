@@ -1,0 +1,16 @@
+{
+  "editor": "1.101.1",
+  "extensionPath": "/var/folders/nj/yy_m0fqn0h17kjf0nq779nhh0000gn/T/screenmark-host-DHBcEL/extensions/tikilabs.screen-mark-0.3.2",
+  "version": "0.3.2",
+  "checks": [
+    "UTF-16 comment numbering and idempotence",
+    "real auto-close typing and suggest acceptance",
+    "preview document switching",
+    "second-root budget and refresh",
+    "packaged PDF runtime",
+    "nested document-symbol hierarchy",
+    "short-screenplay typing and hidden-note revision",
+    "revised PDF extraction and Fountain export",
+    "scene breakdown CSV/Markdown and shooting schedule"
+  ]
+}
