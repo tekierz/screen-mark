@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { buildSync } from 'esbuild';
 import { runInNewContext } from 'node:vm';
 
@@ -134,6 +135,31 @@ test('preview pending edit cannot switch back to previous document', async () =>
   h.change(b); await new Promise(r=>setTimeout(r,350));
   assert.match(h.messages.at(-1).body,/INT\. B/);
   h.panel.dispose();
+});
+test('preview renders revised speech as dialogue after inserting a hidden note', async () => {
+  const h = harness('src/features/preview.ts');
+  const source = readFileSync('test/fixtures/authoring.screen.md', 'utf8');
+  const doc = document(source, '/two/authoring.screen.md');
+  h.api.window.activeTextEditor = {document:doc};
+  h.exports.PreviewPanel.show(h.context);
+  try {
+    assert.match(h.messages.at(-1).body, /class="sm-line">Every frame\.<\/div>/);
+    const before = h.messages.length;
+    const revised = source.replace('> Every frame.', '<!-- Revised delivery note. -->\n> Every single frame.');
+    // VS Code mutates the tracked document without replacing its identity.
+    Object.assign(doc, document(revised, doc.uri.path));
+    h.change(doc);
+    await new Promise(resolve => setTimeout(resolve, 350));
+    assert.ok(h.messages.length > before);
+    const render = h.messages.at(-1);
+    assert.equal(render.type, 'render');
+    assert.match(render.body, /class="sm-character">ADA<\/div><div class="sm-line">Every single frame\.<\/div>/);
+    assert.ok(!render.body.includes('Every frame.'));
+    assert.ok(!render.body.includes('delivery note'));
+    assert.ok(!render.body.includes('🧪'));
+  } finally {
+    h.panel.dispose();
+  }
 });
 test('budget destination follows active root and only FileNotFound creates', async () => {
   const h = harness();

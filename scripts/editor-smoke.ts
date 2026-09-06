@@ -14,6 +14,7 @@ await writeFile(join(user,'User/settings.json'),JSON.stringify({'security.worksp
 const fixture = '---\r\n## metadata\r\n---\r\n## INT. 😀 <!-- 🧪 hidden --> ROOM <!-- tail -->\r\n\r\n**MAYA**\r\n> Hello.\r\n\r\n';
 await writeFile(join(root,'one/a.smark'),fixture);
 await writeFile(join(root,'two/b.smark'),'## INT. SECOND ROOT - DAY\n\nA room.\n');
+await writeFile(join(root, 'two/authoring.screen.md'), await readFile(join(repo, 'test/fixtures/authoring.screen.md')));
 const workspace = join(root,'smoke.code-workspace');
 await writeFile(workspace,JSON.stringify({folders:[{path:join(root,'one')},{path:join(root,'two')}]}));
 async function launch(args: string[], env: NodeJS.ProcessEnv = process.env) {
